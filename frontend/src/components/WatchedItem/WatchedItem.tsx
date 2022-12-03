@@ -6,10 +6,10 @@ import {
   REACT_QUERY_API_KEYS,
   WatchedMediaEntity,
 } from '../../types/types';
-import {getFormattedDate} from '../../utils';
+import {getFormattedDate} from '../../helpers/utils';
 import Button from '../Button/Button';
 
-import './WatchedItem.css';
+import './WatchedItem.less';
 
 type WatchedItemProps = {
   item: WatchedMediaEntity;

@@ -1,0 +1,30 @@
+.navbar {
+	--selected-color: var(--color-secondary);
+	background-color: #000;
+	color: #fff;
+	padding: var(--padding-md);
+
+	.navbar-links {
+		display: flex;
+		gap: 10px;
+
+		a {
+			color: #fff;
+			text-decoration: none;
+			font-weight: 500;
+			padding: 10px;
+			border-radius: var(--border-radius);
+
+			&:hover {
+				background-color: #454545;
+
+			}
+		}
+
+
+		.selected {
+			outline: 1px solid var(--selected-color);
+			color: var(--selected-color);
+		}
+	}
+}

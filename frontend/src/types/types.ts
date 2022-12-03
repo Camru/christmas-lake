@@ -89,6 +89,7 @@ export enum REACT_QUERY_API_KEYS {
 }
 
 export enum URL_PATHS {
+  TO_WATCH = 'to-watch',
   WATCHED = 'watched',
   SEARCH = 'search',
 }

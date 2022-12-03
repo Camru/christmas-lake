@@ -1,15 +1,11 @@
-import './App.css';
-import {Link, Outlet} from 'react-router-dom';
+import './App.less';
+import {Outlet} from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
 
 function App() {
   return (
     <div className="container">
-      <div className="navbar">
-        <div className="navbar-links">
-          <Link to="search">Search</Link>
-          <Link to="watched">Watched</Link>
-        </div>
-      </div>
+      <Navbar />
       <div className="contents">
         <Outlet />
       </div>

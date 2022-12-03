@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './Button.css';
+import './Button.less';
 
 type IconButtonProps = {
   children: React.ReactNode;

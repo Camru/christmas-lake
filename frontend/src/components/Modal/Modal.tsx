@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import IconButton from '../Button/IconButton';
 
-import './Modal.css';
+import './Modal.less';
 
 type ModalProps = {
   children: React.ReactNode;

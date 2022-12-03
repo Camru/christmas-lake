@@ -3,7 +3,7 @@ import greenlightApi from '../../api/greenlightApi';
 import {REACT_QUERY_API_KEYS, WatchedMediaEntity} from '../../types/types';
 import WatchedItem from '../WatchedItem/WatchedItem';
 
-import './WatchedList.css';
+import './WatchedList.less';
 
 const WatchedList = (): JSX.Element => {
   const fetchWatchedMediaQuery = useQuery({
@@ -28,16 +28,12 @@ const WatchedList = (): JSX.Element => {
       return <h1>No movies found</h1>;
     }
 
-    console.log(
-      '[cam] fetchWatchedMediaQuery.data',
-      fetchWatchedMediaQuery.data
-    );
     return fetchWatchedMediaQuery.data?.map((item: WatchedMediaEntity) => {
       return <WatchedItem key={item.imdbID} item={item} />;
     });
   };
 
-  return <div className="movie-list">{renderWatchedList()}</div>;
+  return <div className="watched-list">{renderWatchedList()}</div>;
 };
 
 export default WatchedList;

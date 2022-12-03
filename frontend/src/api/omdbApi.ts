@@ -6,9 +6,6 @@ const instance = axios.create({
   baseURL: `http://www.omdbapi.com/`,
 });
 
-const API_DELAY = 3000;
-const waitFor = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 const omdbApi = {
   search: async (title: string): Promise<SearchResult[]> => {
     const {data} = await instance.get('/', {

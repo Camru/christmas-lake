@@ -7,13 +7,19 @@
   font-size: 15px;
   letter-spacing: 0.75px;
   font-weight: 600;
+
+  &:hover {
+    /* TODO: [cam] how to darken colors programttically>? */
+    background-color: #5f6e99;
+    cursor: pointer;
+  }
+
+  &:disabled {
+    background-color: var(--color-secondary);
+  }
 }
 
-/* TODO: [cam] how to darken colors programttically>? */
-.button-primary:hover {
-  background-color: #5f6e99;
-  cursor: pointer;
-}
+
 
 .icon-button {
   background-color: var(--color-gray);
@@ -28,5 +34,6 @@
 }
 
 .icon-button:hover {
-	background-color: gray;;
+  background-color: gray;
+  ;
 }

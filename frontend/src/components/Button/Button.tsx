@@ -1,9 +1,10 @@
 import React from 'react';
 
-import './Button.css';
+import './Button.less';
 
 type ButtonProps = {
   children: React.ReactNode;
+  disabled?: boolean;
   onClick: (e?: any) => void;
   onKeyDown?: (e?: any) => void;
   style?: {};

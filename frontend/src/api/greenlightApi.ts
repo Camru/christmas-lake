@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { waitFor } from '../helpers/utils';
 import {MediaType, WatchedMediaEntity} from '../types/types';
 
 const instance = axios.create({
@@ -6,7 +7,6 @@ const instance = axios.create({
 });
 
 const API_DELAY = 3000;
-const waitFor = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type CreateWatchedMediaParams = {
   title: string;
@@ -31,7 +31,6 @@ const greenlightApi = {
     params: CreateWatchedMediaParams
   ): Promise<WatchedMediaEntity> => {
     const {data} = await instance.post('movies', params);
-    console.log('[cam] Created Watched Media', data);
     waitFor(API_DELAY);
     return data.media;
   },

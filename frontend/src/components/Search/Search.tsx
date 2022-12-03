@@ -1,16 +1,11 @@
 import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';
-import {CreateWatchedMediaParams} from '../../api/greenlightApi';
+import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
-import {
-  MediaEntity,
-  REACT_QUERY_API_KEYS,
-  SearchResult,
-  WatchedMediaEntity,
-} from '../../types/types';
+import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
 import AddWatchedButton from '../AddButtons/AddWatchedButton';
 import Button from '../Button/Button';
-import './Search.css';
+import './Search.less';
 
 const Search = () => {
   const [currentSearch, setCurrentSearch] = useState('');
@@ -22,18 +17,41 @@ const Search = () => {
     refetchOnWindowFocus: false,
   });
 
-  const handleChange = (e: any) => {
-    setCurrentSearch(e.target.value);
-  };
+  const fetchWatchedMediaQuery = useQuery({
+    queryKey: [REACT_QUERY_API_KEYS.WATCHED],
+    queryFn: greenlightApi.fetchWatchedMedia,
+    retry: false,
+  });
+
   const handleSearch = () => {
     refetch();
   };
 
-  // Poster: 'https://m.media-amazon.com/images/M/MV5BNTNkMTg4YmEtNWViZS00NGMwLWIwYmItMGVmYjU1ZTY1ZGYyXkEyXkFqcGdeQXVyMzA5MTg1Mzc@._V1_SX300.jpg';
-  // Title: "The Test: A New Era for Australia's Team";
-  // Type: 'series';
-  // Year: '2020';
-  // imdbID: 'tt11347692';
+  const handleChange = (e: any) => {
+    setCurrentSearch(e.target.value);
+  };
+
+  const renderSearchResults = () => {
+    if (isFetching) {
+      return <p>loading..</p>;
+    }
+
+    if (!data?.length) {
+      return <p>No results found</p>;
+    }
+
+    return data.map(renderFoundItems);
+  };
+
+  const getIsAlreadyWatched = (imdbId: string) => {
+    if (fetchWatchedMediaQuery.isLoading || !fetchWatchedMediaQuery.data) {
+      return false;
+    }
+
+    return fetchWatchedMediaQuery.data.some(({imdbID: watchedImdbId}) => {
+      return imdbId === watchedImdbId;
+    });
+  };
 
   const convertToMediaEntity = (
     item: SearchResult
@@ -56,25 +74,19 @@ const Search = () => {
         <h2>{searchResult.Title}</h2>
         <p>Year: {searchResult.Year}</p>
         <p>Type: {searchResult.Type}</p>
-        <AddWatchedButton item={convertToMediaEntity(searchResult)}>
+        <AddWatchedButton
+          item={convertToMediaEntity(searchResult)}
+          isAlreadyWatched={getIsAlreadyWatched(searchResult.imdbID)}>
           + Watched
         </AddWatchedButton>
       </div>
     );
   };
 
-  const renderSearchResults = () => {
-    if (isFetching) {
-      return <p>loading..</p>;
+  const handleKeyDown = (e: any) => {
+    if (e.code === 'Enter') {
+      handleSearch();
     }
-
-    if (!data?.length) {
-      return <p>No results found</p>;
-    }
-
-    console.log('[cam] data', data);
-
-    return data.map(renderFoundItems);
   };
 
   return (
@@ -84,6 +96,7 @@ const Search = () => {
         <input
           placeholder="search for a movie/show.."
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
         <Button onClick={handleSearch}>Search</Button>
       </header>
