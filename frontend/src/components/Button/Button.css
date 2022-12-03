@@ -1,0 +1,32 @@
+.button-primary {
+  background-color: var(--color-primary);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  color: white;
+  font-size: 15px;
+  letter-spacing: 0.75px;
+  font-weight: 600;
+}
+
+/* TODO: [cam] how to darken colors programttically>? */
+.button-primary:hover {
+  background-color: #5f6e99;
+  cursor: pointer;
+}
+
+.icon-button {
+  background-color: var(--color-gray);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 50%;
+  border: none;
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+	background-color: gray;;
+}

@@ -1,0 +1,19 @@
+.navbar {
+  background-color: var(--color-gray);
+  padding: var(--padding-md);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.contents {
+  padding: var(--padding-md);
+  overflow: scroll;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 10px;
+}
