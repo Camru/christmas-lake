@@ -34,6 +34,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Thumbnail   string `json:"thumbnail"`
 		ImdbID      string `json:"imdbID"`
 		Rating      string `json:"rating"`
+		Watched     bool   `json:"watched"`
 	}
 
 	// Initialize a new json.Decoder instance which reads from the request body,
@@ -58,6 +59,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Thumbnail:   input.Thumbnail,
 		ImdbID:      input.ImdbID,
 		Rating:      input.Rating,
+		Watched:     input.Watched,
 	}
 
 	// Initialize a new Validator instance.

@@ -12,18 +12,6 @@ import (
 // Annotate the Movie struct with struct tags to control how the keys appear in
 // the JSON-encoded output.
 
-// CREATE TABLE IF NOT EXISTS media (
-//     id bigserial PRIMARY KEY,
-//     dateWatched text NOT NULL,
-//     title text NOT NULL,
-// 	mediaType text NOT NULL,
-// 	thumbnail text NOT NULL,
-// 	imdbID text NOT NULL,
-//     year text NOT NULL,
-// 	rating text NOT NULL,
-//     version integer NOT NULL DEFAULT 1
-// );
-
 type Movie struct {
 	ID          int64  `json:"id"`
 	Title       string `json:"title"`
@@ -33,6 +21,7 @@ type Movie struct {
 	Thumbnail   string `json:"thumbnail"`
 	ImdbID      string `json:"imdbID"`
 	Rating      string `json:"rating"`
+	Watched     bool   `json:"watched"`
 	Version     int32  `json:"version"`
 }
 
@@ -63,8 +52,8 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// Define the SQL query for inserting a new record in the movies table and
 	// returning the system-generated data.
 	query := `
-	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING id, version, imdbID`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -74,7 +63,7 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// from the movie struct. Declaring this slice immediately next to our SQL
 	// query helps to make it nice and clear *what values are being used where*
 	// in the query.
-	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating}
+	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating, movie.Watched}
 
 	// Use the QueryRow() method to execute the SQL query on our connection
 	// pool, passing in the args slice as a variadic parameter and scanning the
@@ -105,7 +94,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	}
 
 	// Define the SQL query for retrieving the movie data.
-	query := `SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, version
+	query := `SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched, version
 	FROM media 
 	WHERE id = $1`
 
@@ -131,6 +120,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 		&movie.Thumbnail,
 		&movie.ImdbID,
 		&movie.Rating,
+		&movie.Watched,
 		&movie.Version,
 	)
 
@@ -226,7 +216,7 @@ func (m MovieModel) Delete(id int64) error {
 func (m MovieModel) GetAll(title string, filters Filters) ([]*Movie, error) {
 	// Construct the SQL query to retrieve all movie records.
 	query := `
-		SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, version
+		SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched, version
         FROM media 
         ORDER BY id`
 
@@ -264,6 +254,7 @@ func (m MovieModel) GetAll(title string, filters Filters) ([]*Movie, error) {
 			&movie.Thumbnail,
 			&movie.ImdbID,
 			&movie.Rating,
+			&movie.Watched,
 			&movie.Version,
 		)
 		if err != nil {
