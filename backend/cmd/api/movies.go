@@ -242,8 +242,7 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 	// To keep things consistent with our other handlers, we'll define an input
 	// struct to hold the expected values from the request query string.
 	var input struct {
-		Title  string
-		Genres []string
+		Watched string
 		data.Filters
 	}
 
@@ -256,8 +255,7 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 	// Use our helpers to extract the title and genres query string values,
 	// falling back to defaults of an empty string and an empty slice
 	// respectively if they are not provided by the client.
-	input.Title = app.readString(qs, "title", "")
-	input.Genres = app.readCSV(qs, "genres", []string{})
+	input.Watched = app.readString(qs, "watched", "")
 
 	// Get the page and page_size query string values as integers. Notice that
 	// we set the default page value to 1 and default page_size to 20, and that
@@ -272,7 +270,7 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	movies, err := app.models.Movies.GetAll(input.Title, input.Filters)
+	movies, err := app.models.Movies.GetAll(input.Watched, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

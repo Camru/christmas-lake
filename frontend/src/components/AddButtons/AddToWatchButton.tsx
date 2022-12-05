@@ -4,7 +4,7 @@ import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
 import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
 import Button from '../Button/Button';
 
-type AddWatchedButtonProps = {
+type AddToWatchButtonProps = {
   children: React.ReactNode;
   isAlreadyAdded: boolean;
   item: SearchResult;
@@ -20,15 +20,15 @@ const convertToMediaEntity = (item: SearchResult): CreateWatchedMediaParams => {
     thumbnail: item.Poster,
     imdbID: item.imdbID,
     rating: '8.0/10.0',
-    watched: true,
+    watched: false,
   };
 };
 
-const AddWatchedButton = ({
+const AddToWatchButton = ({
   item,
   isAlreadyAdded,
   children,
-}: AddWatchedButtonProps): JSX.Element => {
+}: AddToWatchButtonProps): JSX.Element => {
   const [isSuccessfullyAdded, setIsSuccessfullyAdded] =
     useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -53,7 +53,7 @@ const AddWatchedButton = ({
     }
 
     if (isAlreadyAdded) {
-      return 'Already Watched';
+      return 'Already added';
     }
 
     if (!isSuccessfullyAdded) {
@@ -72,4 +72,4 @@ const AddWatchedButton = ({
   );
 };
 
-export default AddWatchedButton;
+export default AddToWatchButton;

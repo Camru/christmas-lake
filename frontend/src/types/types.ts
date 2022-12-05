@@ -9,6 +9,7 @@ export type WatchedMediaEntity = {
   imdbID: string;
   year: string;
   rating: string;
+  watched: boolean;
 };
 
 export type SearchResult = {
@@ -64,22 +65,6 @@ type ToWatchMediaEntity = {
   Type: string;
   totalSeasons: string;
 };
-
-// Want to Watch Entity
-
-export type MediaEntity = {
-  title: string;
-  genres: string[];
-  runtime: string;
-  year: string;
-};
-
-export enum CreateMovieKey {
-  TITLE = 'title',
-  GENRES = 'genres',
-  RUNTIME = 'runtime',
-  YEAR = 'year',
-}
 
 export enum REACT_QUERY_API_KEYS {
   WATCHED = 'watched',

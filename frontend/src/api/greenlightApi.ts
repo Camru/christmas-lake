@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { waitFor } from '../helpers/utils';
+import {waitFor} from '../helpers/utils';
 import {MediaType, WatchedMediaEntity} from '../types/types';
 
 const instance = axios.create({
@@ -16,11 +16,35 @@ export type CreateWatchedMediaParams = {
   imdbID: string;
   year: string;
   rating: string;
+  watched: boolean;
 };
 
 const greenlightApi = {
-  fetchWatchedMedia: async (): Promise<WatchedMediaEntity[]> => {
+  fetchAllMedia: async (): Promise<WatchedMediaEntity[]> => {
     const {data} = await instance.get('movies');
+
+    waitFor(API_DELAY);
+
+    return data.media;
+  },
+  fetchWatchedMedia: async (): Promise<WatchedMediaEntity[]> => {
+    const {data} = await instance.get('movies', {
+      params: {
+        watched: true,
+      },
+    });
+
+    waitFor(API_DELAY);
+
+    return data.media;
+  },
+
+  fetchToWatchMedia: async (): Promise<WatchedMediaEntity[]> => {
+    const {data} = await instance.get('movies', {
+      params: {
+        watched: false,
+      },
+    });
 
     waitFor(API_DELAY);
 

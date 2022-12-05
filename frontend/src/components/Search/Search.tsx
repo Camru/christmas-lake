@@ -3,6 +3,7 @@ import {useState} from 'react';
 import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
 import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
+import AddToWatchButton from '../AddButtons/AddToWatchButton';
 import AddWatchedButton from '../AddButtons/AddWatchedButton';
 import Button from '../Button/Button';
 import './Search.less';
@@ -48,23 +49,23 @@ const Search = () => {
       return false;
     }
 
-    return fetchWatchedMediaQuery.data.some(({imdbID: watchedImdbId}) => {
-      return imdbId === watchedImdbId;
-    });
+    return fetchWatchedMediaQuery.data.some(
+      ({imdbID: watchedImdbId, watched}) => {
+        return imdbId === watchedImdbId && watched;
+      }
+    );
   };
 
-  const convertToMediaEntity = (
-    item: SearchResult
-  ): CreateWatchedMediaParams => {
-    return {
-      title: item.Title,
-      dateWatched: new Date().toISOString(),
-      year: item.Year,
-      mediaType: item.Type,
-      thumbnail: item.Poster,
-      imdbID: item.imdbID,
-      rating: '8.0/10.0',
-    };
+  const getIsAlreadyAddedToWatchList = (imdbId: string) => {
+    if (fetchWatchedMediaQuery.isLoading || !fetchWatchedMediaQuery.data) {
+      return false;
+    }
+
+    return fetchWatchedMediaQuery.data.some(
+      ({imdbID: watchedImdbId, watched}) => {
+        return imdbId === watchedImdbId && !watched;
+      }
+    );
   };
 
   const renderFoundItems = (searchResult: SearchResult) => {
@@ -75,10 +76,15 @@ const Search = () => {
         <p>Year: {searchResult.Year}</p>
         <p>Type: {searchResult.Type}</p>
         <AddWatchedButton
-          item={convertToMediaEntity(searchResult)}
-          isAlreadyWatched={getIsAlreadyWatched(searchResult.imdbID)}>
+          item={searchResult}
+          isAlreadyAdded={getIsAlreadyWatched(searchResult.imdbID)}>
           + Watched
         </AddWatchedButton>
+        <AddToWatchButton
+          item={searchResult}
+          isAlreadyAdded={getIsAlreadyAddedToWatchList(searchResult.imdbID)}>
+          + To Watch
+        </AddToWatchButton>
       </div>
     );
   };

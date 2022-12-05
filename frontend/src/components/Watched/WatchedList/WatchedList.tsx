@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
-import greenlightApi from '../../api/greenlightApi';
-import {REACT_QUERY_API_KEYS, WatchedMediaEntity} from '../../types/types';
+import greenlightApi from '../../../api/greenlightApi';
+import {REACT_QUERY_API_KEYS, WatchedMediaEntity} from '../../../types/types';
 import WatchedItem from '../WatchedItem/WatchedItem';
 
 import './WatchedList.less';
