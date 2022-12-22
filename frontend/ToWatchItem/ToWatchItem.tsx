@@ -1,23 +1,25 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import greenlightApi from '../../../api/greenlightApi';
-import omdbApi from '../../../api/omdbApi';
+import greenlightApi from '../src/api/greenlightApi';
+import omdbApi from '../src/api/omdbApi';
 import {
+  ButtonColor,
   MediaRating,
+  RatingSource,
   REACT_QUERY_API_KEYS,
-  WatchedMediaEntity,
-} from '../../../types/types';
-import {getFormattedDate, ratioToPercentage} from '../../../helpers/utils';
-import Button from '../../Button/Button';
+  SearchResult,
+  MediaEntity,
+} from '../src/types/types';
+import {ratioToPercentage} from '../src/helpers/utils';
 
 import './ToWatchItem.less';
 
-import TomatoSVG from '../../../images/tomato.svg';
-import SplatSVG from '../../../images/splat.svg';
-import ImdbPNG from '../../../images/imdb.png';
-import MetacriticPNG from '../../../images/metacritic.png';
+import AddWatchedButton from '../src/components/AddButtons/AddWatchedButton';
+import Box from '../src/components/Shared/Box/Box';
+import IconButton from '../src/components/Shared/Button/IconButton';
+import Rating from '../src/components/Shared/Rating/Rating';
 
 type ToWatchItemProps = {
-  item: WatchedMediaEntity;
+  item: MediaEntity;
 };
 
 const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
@@ -37,15 +39,6 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
 
   const handleDeleteMovie = (movieId: string) => {
     deleteMovieMutation.mutate(movieId);
-  };
-
-  const renderToWatchItemDetail = (label: string, detail: string | number) => {
-    return (
-      <div className="to-watch-item-detail">
-        <label>{label}</label>
-        <p>{detail}</p>
-      </div>
-    );
   };
 
   const renderExtraDetails = () => {
@@ -70,10 +63,6 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
         label: 'Country',
         value: data?.Country,
       },
-      {
-        label: 'IMDB Rating',
-        value: data?.imdbRating,
-      },
     ];
 
     return details.map(({label, value}) => {
@@ -97,22 +86,6 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
   // because the Title hasn’t released yet or there are not enough ratings to
   // generate a score
 
-  enum RatingSource {
-    ROTTEN_TOMATOES = 'Rotten Tomatoes',
-    IMDB = 'Internet Movie Database',
-    METACRITIC = 'Metacritic',
-  }
-
-  const renderRottenTomatosRating = (rating: string) => {
-    if (parseInt(rating) >= 60) {
-      return <img src={TomatoSVG} alt="tomato" />;
-    }
-
-    if (parseInt(rating) < 60) {
-      return <img src={SplatSVG} alt="splat" />;
-    }
-  };
-
   const renderRatings = () => {
     if (isFetching) {
       return <p>loading ratings...</p>;
@@ -121,50 +94,58 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
     const ratings = data?.Ratings;
 
     const renderRating = (rating: MediaRating) => {
-      const imgStyle = {height: '16px', width: '16px'};
-      const RATING_ICONS = {
-        [RatingSource.ROTTEN_TOMATOES]: renderRottenTomatosRating(rating.Value),
-        [RatingSource.IMDB]: <img src={ImdbPNG} alt="imdb" {...imgStyle} />,
-        [RatingSource.METACRITIC]: (
-          <img src={MetacriticPNG} alt="metacritic" {...imgStyle} />
-        ),
-      };
-
+      const source = rating.Source as keyof typeof RatingSource;
       return (
         <li key={rating.Source} className="rating">
-          <span className="rating-source">{rating.Source} :</span>
-          <div className="rating-value">
-            {RATING_ICONS[rating.Source as keyof typeof RATING_ICONS]}{' '}
-            {ratioToPercentage(rating.Value)}
-          </div>
+          {/* @ts-ignore */}
+          <Rating value={rating.Value} source={source} />
         </li>
       );
     };
 
-    return <ul className="ratings-list">{ratings?.map(renderRating)}</ul>;
+    return (
+      <ul className="ratings-list">
+        {ratings?.length ? ratings.map(renderRating) : <p>No Ratings</p>}
+      </ul>
+    );
+  };
+
+  const searchResult: SearchResult = {
+    Poster: item.thumbnail,
+    Title: item.title,
+    Type: item.mediaType,
+    Year: item.year,
+    imdbID: item.imdbID,
   };
 
   return (
-    <div key={item.imdbID} className="to-watch-item">
+    <div key={item.imdbID} className="media-card">
       <div className="to-watch-item-header">
         <h1>{item.title}</h1>
       </div>
       <div className="to-watch-item-body">
         <img className="thumbnail" src={item.thumbnail} alt="media-thumbnail" />
-        {renderToWatchItemDetail(
-          'Date Watched',
-          getFormattedDate(item.dateWatched)
-        )}
-        {renderToWatchItemDetail('Rating', item.rating)}
         <div className="to-watch-item-extra-details">
           {renderExtraDetails()}
         </div>
         <div className="to-watch-item-ratings">{renderRatings()}</div>
       </div>
       <div className="to-watch-item-footer">
-        <Button onClick={() => handleDeleteMovie(item.id.toString())}>
-          Delete
-        </Button>
+        <Box gap={10} alignItems="center">
+          <AddWatchedButton
+            item={searchResult}
+            isAlreadyAdded={false}
+            isIconButton
+            onSuccess={() => handleDeleteMovie(item.id.toString())}>
+            +
+          </AddWatchedButton>
+
+          <IconButton
+            onClick={() => handleDeleteMovie(item.id.toString())}
+            color={ButtonColor.DANGER}>
+            x
+          </IconButton>
+        </Box>
       </div>
     </div>
   );

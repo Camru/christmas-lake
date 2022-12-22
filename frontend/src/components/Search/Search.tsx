@@ -1,11 +1,12 @@
 import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';
-import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
+import greenlightApi from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
 import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
 import AddToWatchButton from '../AddButtons/AddToWatchButton';
 import AddWatchedButton from '../AddButtons/AddWatchedButton';
-import Button from '../Button/Button';
+import Box from '../Shared/Box/Box';
+import Button from '../Shared/Button/Button';
 import './Search.less';
 
 const Search = () => {
@@ -75,16 +76,18 @@ const Search = () => {
         <h2>{searchResult.Title}</h2>
         <p>Year: {searchResult.Year}</p>
         <p>Type: {searchResult.Type}</p>
-        <AddWatchedButton
-          item={searchResult}
-          isAlreadyAdded={getIsAlreadyWatched(searchResult.imdbID)}>
-          + Watched
-        </AddWatchedButton>
-        <AddToWatchButton
-          item={searchResult}
-          isAlreadyAdded={getIsAlreadyAddedToWatchList(searchResult.imdbID)}>
-          + To Watch
-        </AddToWatchButton>
+        <Box gap={10}>
+          <AddWatchedButton
+            item={searchResult}
+            isAlreadyAdded={getIsAlreadyWatched(searchResult.imdbID)}>
+            + Watched
+          </AddWatchedButton>
+          <AddToWatchButton
+            item={searchResult}
+            isAlreadyAdded={getIsAlreadyAddedToWatchList(searchResult.imdbID)}>
+            + To Watch
+          </AddToWatchButton>
+        </Box>
       </div>
     );
   };

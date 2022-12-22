@@ -1,6 +1,10 @@
-export type MediaType = 'movie' | 'series';
+export enum MediaType {
+  ALL = 'all',
+  MOVIE = 'movie',
+  SERIES = 'series',
+}
 
-export type WatchedMediaEntity = {
+export type MediaEntity = {
   id: string;
   title: string;
   dateWatched: string;
@@ -77,4 +81,22 @@ export enum URL_PATHS {
   TO_WATCH = 'to-watch',
   WATCHED = 'watched',
   SEARCH = 'search',
+}
+
+export type Tab = {
+  label: string;
+  value: string;
+};
+
+export enum ButtonColor {
+  DEFAULT = 'gray',
+  SUCCESS = '#00873c',
+  WARNING = 'orange',
+  DANGER = '#fe2b2b',
+}
+
+export enum RatingSource {
+  ROTTEN_TOMATOES = 'Rotten Tomatoes',
+  IMDB = 'Internet Movie Database',
+  METACRITIC = 'Metacritic',
 }

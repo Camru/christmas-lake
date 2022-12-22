@@ -2,6 +2,7 @@ export const convertGenresToArr = (str: string): string[] => {
   return [str];
 };
 
+//TODO: [cam]  why is this sometimes giving the previous day?
 export const getFormattedDate = (dateString: string) => {
   const date = new Date(dateString);
   const month = date.toLocaleString('default', {month: 'short'});
@@ -9,6 +10,15 @@ export const getFormattedDate = (dateString: string) => {
   const year = date.getFullYear();
 
   return `${month} ${day}, ${year}`;
+};
+
+export const getCurrentDateInputValue = () => {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+
+  return yyyy + '-' + mm + '-' + dd;
 };
 
 export const waitFor = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -27,4 +37,8 @@ export const ratioToPercentage = (ratio: string): string => {
 
   // Return the percentage as a string with a percent sign appended.
   return percentage.toString() + '%';
+};
+
+export const floatToPercentage = (float: string): string => {
+  return `${(parseFloat(float) * 10)}%`;
 };

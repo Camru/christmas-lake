@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
 import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
-import Button from '../Button/Button';
+import Button from '../Shared/Button/Button';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
@@ -10,7 +10,6 @@ type AddToWatchButtonProps = {
   item: SearchResult;
 };
 
-//TODO: [cam] prompts a modal to put DateWatched and Rating before adding to DB
 const convertToMediaEntity = (item: SearchResult): CreateWatchedMediaParams => {
   return {
     title: item.Title,

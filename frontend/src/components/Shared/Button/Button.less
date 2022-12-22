@@ -7,10 +7,11 @@
   font-size: 15px;
   letter-spacing: 0.75px;
   font-weight: 600;
+  white-space: nowrap;
 
   &:hover {
     /* TODO: [cam] how to darken colors programttically>? */
-    background-color: #5f6e99;
+    opacity: 0.8;
     cursor: pointer;
   }
 
@@ -22,15 +23,16 @@
 
 
 .icon-button {
-  background-color: var(--color-gray);
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  color: white;
   border-radius: 50%;
   border: none;
   height: 30px;
   width: 30px;
   cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .icon-button:hover {

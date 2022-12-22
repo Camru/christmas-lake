@@ -1,17 +1,29 @@
-.search header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.search {
+  input {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: var(--border-radius);
+    min-width: 275px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h1 {
+
+      margin-right: auto;
+    }
+  }
 }
 
-.search header h1 {
-  margin-right: auto;
-}
 
 .search-results {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .search-result-item {

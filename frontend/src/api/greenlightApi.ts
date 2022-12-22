@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {waitFor} from '../helpers/utils';
-import {MediaType, WatchedMediaEntity} from '../types/types';
+import {MediaType, MediaEntity} from '../types/types';
 
 const instance = axios.create({
   baseURL: 'http://localhost:4000/v1/',
@@ -20,17 +20,20 @@ export type CreateWatchedMediaParams = {
 };
 
 const greenlightApi = {
-  fetchAllMedia: async (): Promise<WatchedMediaEntity[]> => {
+  fetchAllMedia: async (): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies');
 
     waitFor(API_DELAY);
 
     return data.media;
   },
-  fetchWatchedMedia: async (): Promise<WatchedMediaEntity[]> => {
+  fetchWatchedMedia: async (
+    mediaType?: MediaType
+  ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {
         watched: true,
+        mediaType,
       },
     });
 
@@ -38,11 +41,13 @@ const greenlightApi = {
 
     return data.media;
   },
-
-  fetchToWatchMedia: async (): Promise<WatchedMediaEntity[]> => {
+  fetchToWatchMedia: async (
+    mediaType?: MediaType
+  ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {
         watched: false,
+        mediaType,
       },
     });
 
@@ -53,7 +58,7 @@ const greenlightApi = {
 
   createWatchedMedia: async (
     params: CreateWatchedMediaParams
-  ): Promise<WatchedMediaEntity> => {
+  ): Promise<MediaEntity> => {
     const {data} = await instance.post('movies', params);
     waitFor(API_DELAY);
     return data.media;

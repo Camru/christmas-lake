@@ -1,5 +1,6 @@
-import {Link, NavLink} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import {URL_PATHS} from '../../types/types';
+import Box from '../Shared/Box/Box';
 
 import './Navbar.less';
 
@@ -27,9 +28,9 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar">
+    <Box className="navbar" flexDirection="column" gap={10}>
       <div className="navbar-links">{NAV_LINKS.map(renderNavLink)}</div>
-    </div>
+    </Box>
   );
 };
 

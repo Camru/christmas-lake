@@ -1,4 +1,5 @@
 import React from 'react';
+import {ButtonColor} from '../../../types/types';
 
 import './Button.less';
 
@@ -9,11 +10,15 @@ type ButtonProps = {
   onKeyDown?: (e?: any) => void;
   style?: {};
   type?: 'button' | 'submit' | 'reset' | undefined;
+  color?: ButtonColor;
 };
 
-const Button = ({children, ...rest}: ButtonProps): JSX.Element => {
+const Button = ({color, children, ...rest}: ButtonProps): JSX.Element => {
   return (
-    <button className="button-primary" {...rest}>
+    <button
+      className="button-primary"
+      {...rest}
+      style={{backgroundColor: color ? color : ButtonColor.DEFAULT}}>
       {children}
     </button>
   );

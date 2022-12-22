@@ -1,7 +1,7 @@
-import WatchedList from './components/Watched/WatchedList/WatchedList';
+import WatchedList from './components/MediaList/WatchedList';
 import Search from './components/Search/Search';
 import {URL_PATHS} from './types/types';
-import ToWatchList from './components/ToWatch/ToWatchList/ToWatchList';
+import ToWatchList from './components/MediaList/ToWatchList';
 
 const routes = [
   {
