@@ -1,3 +1,5 @@
+import {MediaEntity, SearchParam} from '../types/types';
+
 export const convertGenresToArr = (str: string): string[] => {
   return [str];
 };
@@ -40,5 +42,35 @@ export const ratioToPercentage = (ratio: string): string => {
 };
 
 export const floatToPercentage = (float: string): string => {
-  return `${(parseFloat(float) * 10)}%`;
+  return `${parseFloat(float) * 10}%`;
+};
+
+//TODO: [cam] how to make a type that only takes one primitive value from an
+//object. I want to create a type that is only the string values of MediaEntity
+type MediaEntityKey = string;
+
+const SEARCHABLE_FIELDS: Partial<MediaEntityKey>[] = [
+  'title',
+  'dateWatched',
+  'year',
+];
+
+const filterBySearch = (item: MediaEntity, searchParam: string): boolean => {
+  if (!searchParam) {
+    return true;
+  }
+
+  return SEARCHABLE_FIELDS.some((field: MediaEntityKey) => {
+    const fieldValue = item[field as keyof MediaEntity].toString();
+    return fieldValue.toLowerCase().includes(searchParam.toLowerCase());
+  });
+};
+
+export const getFilteredMediaEntities = (
+  items: MediaEntity[],
+  searchParams: any
+) => {
+  return items.filter((item: MediaEntity) =>
+    filterBySearch(item, searchParams.get(SearchParam.SEARCH))
+  );
 };

@@ -9,6 +9,7 @@ type ModalProps = {
   title: string;
 };
 
+//TODO: [cam] how to render modal relative to body?
 const Modal = ({onClose, title, children}: ModalProps): JSX.Element => {
   return (
     <div className="modal-overlay">

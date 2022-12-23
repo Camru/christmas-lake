@@ -1,15 +1,22 @@
 import {useQuery} from '@tanstack/react-query';
 import {useSearchParams} from 'react-router-dom';
 import greenlightApi from '../../api/greenlightApi';
-import {MEDIA_TYPE_PARAM} from '../../constants/url';
-import {MediaType, REACT_QUERY_API_KEYS, MediaEntity} from '../../types/types';
+import {getFilteredMediaEntities} from '../../helpers/utils';
+import {
+  MediaType,
+  REACT_QUERY_API_KEYS,
+  MediaEntity,
+  SearchParam,
+} from '../../types/types';
 import MediaCard from '../MediaCard/MediaCard';
+import ToWatchFooter from '../MediaCard/ToWatchFooter';
+import Box from '../Shared/Box/Box';
 
 import './MediaList.less';
 
 const ToWatchList = (): JSX.Element => {
   const [searchParams] = useSearchParams();
-  const mediaTypeParam = searchParams.get(MEDIA_TYPE_PARAM) as MediaType;
+  const mediaTypeParam = searchParams.get(SearchParam.MEDIA_TYPE) as MediaType;
 
   const fetchToWatchMedia = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam],
@@ -36,13 +43,28 @@ const ToWatchList = (): JSX.Element => {
       return <h1>No movies found</h1>;
     }
 
-    //TODO: [cam]  Use correct component <ToWatchItem /> and type
-    return fetchToWatchMedia.data?.map((item: MediaEntity) => {
-      return <MediaCard key={item.imdbID} item={item} />;
+    const filteredItems = (): MediaEntity[] => {
+      if (!fetchToWatchMedia.data) {
+        return [];
+      }
+
+      return getFilteredMediaEntities(fetchToWatchMedia.data, searchParams);
+    };
+
+    return filteredItems().map((item: MediaEntity) => {
+      return (
+        <MediaCard key={item.imdbID} item={item}>
+          <ToWatchFooter item={item} />
+        </MediaCard>
+      );
     });
   };
 
-  return <div className="media-card-list">{renderToWatchList()}</div>;
+  return (
+    <Box flexDirection="column">
+      <div className="media-card-list">{renderToWatchList()}</div>
+    </Box>
+  );
 };
 
 export default ToWatchList;

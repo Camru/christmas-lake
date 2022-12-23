@@ -22,7 +22,6 @@ type AddWatchedButtonProps = {
   onSuccess?: () => void;
 };
 
-//TODO: [cam] prompts a modal to put DateWatched and Rating before adding to DB
 const convertToMediaEntity = (
   item: SearchResult,
   dateWatched: string,
@@ -68,8 +67,6 @@ const AddWatchedButton = ({
     },
   });
 
-  //TODO: [cam] default rating to "Unrated" and render that instead of percentage
-  //TODO: [cam] don't allow to add if dateWatched is empty, default to today
   const handleAddToWatchList = () => {
     const mediaEntity = convertToMediaEntity(item, dateWatched, userRating);
     createWatchedMediaMutation.mutate(mediaEntity);
@@ -104,7 +101,6 @@ const AddWatchedButton = ({
     setIsModalOpen(true);
   };
 
-  //TODO: [cam] show a tomato/splat icon that changes as you drag the rating slider
   const renderModal = () => {
     return (
       <Modal title="Add to Watched list" onClose={() => setIsModalOpen(false)}>

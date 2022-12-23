@@ -1,6 +1,7 @@
 .media-card {
 	--header-padding: 5px 10px;
 
+	position: relative;
 	width: var(--media-card-width);
 	height: var(--media-card-height);
 	border-radius: var(--media-card-border-radius);
@@ -8,16 +9,25 @@
 	color: white;
 
 	.media-card-header {
-		background-color: #29507a;
 		display: flex;
 		align-items: center;
 		padding: var(--header-padding);
 		border-radius: var(--media-card-border-radius) var(--media-card-border-radius) 0 0;
 	}
 
+	.media-card-contents {
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		backdrop-filter: blur(4px);
+		background-color: #10122dc9;
+
+	}
+
 	.media-card-img {
 		flex: 1;
-		background: url('../../images/thumbnail_placeholder.png');
+		background: url('../../images/metacritic.png');
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center;

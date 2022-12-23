@@ -100,3 +100,8 @@ export enum RatingSource {
   IMDB = 'Internet Movie Database',
   METACRITIC = 'Metacritic',
 }
+
+export enum SearchParam {
+  MEDIA_TYPE = 'mediaType',
+  SEARCH = 'search',
+}

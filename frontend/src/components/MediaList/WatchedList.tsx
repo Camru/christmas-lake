@@ -1,16 +1,27 @@
-import {useQuery} from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useSearchParams} from 'react-router-dom';
 import greenlightApi from '../../api/greenlightApi';
-import { MEDIA_TYPE_PARAM } from '../../constants/url';
-import {MediaType, REACT_QUERY_API_KEYS, MediaEntity} from '../../types/types';
+import {getFilteredMediaEntities} from '../../helpers/utils';
+import {
+  MediaType,
+  REACT_QUERY_API_KEYS,
+  MediaEntity,
+  RatingSource,
+  ButtonColor,
+  SearchParam,
+} from '../../types/types';
 import MediaCard from '../MediaCard/MediaCard';
+import Box from '../Shared/Box/Box';
+import IconButton from '../Shared/Button/IconButton';
+import Rating from '../Shared/Rating/Rating';
 
 import './MediaList.less';
 
 const WatchedList = (): JSX.Element => {
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
-  const mediaTypeParam = searchParams.get(MEDIA_TYPE_PARAM) as MediaType;
-  
+  const mediaTypeParam = searchParams.get(SearchParam.MEDIA_TYPE) as MediaType;
+
   const fetchWatchedMediaQuery = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam],
     queryFn: () => {
@@ -22,6 +33,17 @@ const WatchedList = (): JSX.Element => {
     },
     retry: false,
   });
+
+  const deleteMovieMutation = useMutation({
+    mutationFn: greenlightApi.deleteMovie,
+    onSuccess: () => {
+      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
+    },
+  });
+
+  const handleDeleteMovie = (movieId: string) => {
+    deleteMovieMutation.mutate(movieId);
+  };
 
   const renderWatchedList = () => {
     if (fetchWatchedMediaQuery.isInitialLoading) {
@@ -39,8 +61,34 @@ const WatchedList = (): JSX.Element => {
       return <h1>No movies found</h1>;
     }
 
-    return fetchWatchedMediaQuery.data?.map((item: MediaEntity) => {
-      return <MediaCard key={item.imdbID} item={item} />;
+    const filteredItems = (): MediaEntity[] => {
+      if (!fetchWatchedMediaQuery.data) {
+        return [];
+      }
+
+      return getFilteredMediaEntities(
+        fetchWatchedMediaQuery.data,
+        searchParams
+      );
+    };
+
+    return filteredItems().map((item: MediaEntity) => {
+      return (
+        <MediaCard key={item.imdbID} item={item}>
+          <Box justifyContent="space-between" width="100%">
+            <Rating
+              value={item.rating}
+              source={RatingSource.ROTTEN_TOMATOES}
+              type="float"
+            />
+            <IconButton
+              onClick={() => handleDeleteMovie(item.id.toString())}
+              color={ButtonColor.DANGER}>
+              Del
+            </IconButton>
+          </Box>
+        </MediaCard>
+      );
     });
   };
 

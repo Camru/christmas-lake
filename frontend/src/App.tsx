@@ -12,8 +12,8 @@ function App() {
         justifyContent="space-between"
         alignItems="center">
         <Navbar />
-        <ActionBar />
       </Box>
+      <ActionBar />
       <div className="contents">
         <Outlet />
       </div>
