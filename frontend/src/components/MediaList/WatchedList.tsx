@@ -21,15 +21,15 @@ const WatchedList = (): JSX.Element => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const mediaTypeParam = searchParams.get(SearchParam.MEDIA_TYPE) as MediaType;
+  const sortParam = searchParams.get(SearchParam.SORT);
 
   const fetchWatchedMediaQuery = useQuery({
-    queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam],
+    queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam, sortParam],
     queryFn: () => {
-      if (mediaTypeParam) {
-        return greenlightApi.fetchWatchedMedia(mediaTypeParam);
-      }
-
-      return greenlightApi.fetchWatchedMedia();
+      return greenlightApi.fetchWatchedMedia({
+        mediaType: mediaTypeParam,
+        sort: sortParam,
+      });
     },
     retry: false,
   });

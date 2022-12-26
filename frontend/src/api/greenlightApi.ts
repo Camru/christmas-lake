@@ -19,6 +19,11 @@ export type CreateWatchedMediaParams = {
   watched: boolean;
 };
 
+type FetchMediaParams = {
+  mediaType?: MediaType;
+  sort?: string | null;
+};
+
 const greenlightApi = {
   fetchAllMedia: async (): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies');
@@ -28,12 +33,12 @@ const greenlightApi = {
     return data.media;
   },
   fetchWatchedMedia: async (
-    mediaType?: MediaType
+    params: FetchMediaParams
   ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {
         watched: true,
-        mediaType,
+        ...params,
       },
     });
 
@@ -42,12 +47,12 @@ const greenlightApi = {
     return data.media;
   },
   fetchToWatchMedia: async (
-    mediaType?: MediaType
+    params: FetchMediaParams
   ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {
         watched: false,
-        mediaType,
+        ...params,
       },
     });
 

@@ -17,15 +17,15 @@ import './MediaList.less';
 const ToWatchList = (): JSX.Element => {
   const [searchParams] = useSearchParams();
   const mediaTypeParam = searchParams.get(SearchParam.MEDIA_TYPE) as MediaType;
+  const sortParam = searchParams.get(SearchParam.SORT);
 
   const fetchToWatchMedia = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam],
     queryFn: () => {
-      if (mediaTypeParam) {
-        return greenlightApi.fetchToWatchMedia(mediaTypeParam);
-      }
-
-      return greenlightApi.fetchToWatchMedia();
+      return greenlightApi.fetchWatchedMedia({
+        mediaType: mediaTypeParam,
+        sort: sortParam,
+      });
     },
     retry: false,
   });

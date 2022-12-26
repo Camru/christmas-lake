@@ -12,6 +12,7 @@ import {
 import AddWatchedButton from '../AddButtons/AddWatchedButton';
 import Box from '../Shared/Box/Box';
 import IconButton from '../Shared/Button/IconButton';
+import Rating from '../Shared/Rating/Rating';
 
 type ToWatchFooter = {
   item: MediaEntity;
@@ -78,11 +79,12 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     const ratings = data?.Ratings;
 
     const renderRating = (rating: MediaRating) => {
-      const source = rating.Source as keyof typeof RatingSource;
       return (
         <li key={rating.Source} className="rating">
-          {/* @ts-ignore */}
-          <Rating value={rating.Value} source={source} />
+          <Rating
+            value={rating.Value}
+            source={RatingSource[rating.Source as keyof typeof RatingSource]}
+          />
         </li>
       );
     };

@@ -104,4 +104,5 @@ export enum RatingSource {
 export enum SearchParam {
   MEDIA_TYPE = 'mediaType',
   SEARCH = 'search',
+  SORT = 'sort',
 }

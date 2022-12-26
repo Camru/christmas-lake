@@ -93,7 +93,6 @@ const AddWatchedButton = ({
   };
 
   const handleChangeRating = (e: any) => {
-    console.log('[cam] e.target.value', e.target.value);
     setUserRating(e.target.value);
   };
 
