@@ -38,7 +38,7 @@ export const ratioToPercentage = (ratio: string): string => {
   const percentage = (numeratorAsNumber / denominatorAsNumber) * 100;
 
   // Return the percentage as a string with a percent sign appended.
-  return percentage.toString() + '%';
+  return Math.round(percentage).toString() + '%';
 };
 
 export const floatToPercentage = (float: string): string => {

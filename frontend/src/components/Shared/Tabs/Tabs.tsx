@@ -21,7 +21,7 @@ const Tabs = ({activeTab, tabs, onChange}: TabsProps): JSX.Element => {
         key={label}
         className={cx('tab', {active: activeTab.value === value})}
         onClick={() => handleTabClick({label, value})}>
-        {value}
+        {label}
       </button>
     );
   };

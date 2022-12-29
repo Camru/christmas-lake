@@ -8,6 +8,9 @@
   letter-spacing: 0.75px;
   font-weight: 600;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 
   &:hover {
     /* TODO: [cam] how to darken colors programttically>? */
@@ -16,26 +19,27 @@
   }
 
   &:disabled {
-    background-color: var(--color-secondary);
+    cursor: not-allowed;
+    background-color: white;
+    color: var(--color-gray-1);
+    outline: 1px solid var(--color-gray-1);
   }
 }
 
-
-
 .icon-button {
   color: white;
+  background-color: transparent;
   border-radius: 50%;
   border: none;
   height: 30px;
   width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   &:hover {
-    opacity: 0.7;
-  }
-}
 
-.icon-button:hover {
-  background-color: gray;
-  ;
+    background-color: #c5c5c521;
+  }
 }

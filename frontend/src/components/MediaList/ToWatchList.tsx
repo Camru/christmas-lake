@@ -8,6 +8,10 @@ import {
   MediaEntity,
   SearchParam,
 } from '../../types/types';
+import {
+  CLIENT_SORT_OPTIONS,
+  DEFAULT_SORT_OPTIONS,
+} from '../ActionBar/ActionBar';
 import MediaCard from '../MediaCard/MediaCard';
 import ToWatchFooter from '../MediaCard/ToWatchFooter';
 import Box from '../Shared/Box/Box';
@@ -19,12 +23,16 @@ const ToWatchList = (): JSX.Element => {
   const mediaTypeParam = searchParams.get(SearchParam.MEDIA_TYPE) as MediaType;
   const sortParam = searchParams.get(SearchParam.SORT);
 
+  const isClientSortOption = CLIENT_SORT_OPTIONS.some(({value}) => {
+    return value === sortParam?.replace('-', '');
+  });
+
   const fetchToWatchMedia = useQuery({
-    queryKey: [REACT_QUERY_API_KEYS.WATCHED, mediaTypeParam],
+    queryKey: [REACT_QUERY_API_KEYS.TO_WATCH, mediaTypeParam, sortParam],
     queryFn: () => {
-      return greenlightApi.fetchWatchedMedia({
+      return greenlightApi.fetchToWatchMedia({
         mediaType: mediaTypeParam,
-        sort: sortParam,
+        sort: isClientSortOption ? DEFAULT_SORT_OPTIONS[0].value : sortParam,
       });
     },
     retry: false,

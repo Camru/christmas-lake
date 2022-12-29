@@ -7,6 +7,8 @@ import {RatingSource} from '../../../types/types';
 import {floatToPercentage, ratioToPercentage} from '../../../helpers/utils';
 import Box from '../Box/Box';
 
+import './Rating.less';
+
 type RatingProps = {
   value: string;
   source: RatingSource;

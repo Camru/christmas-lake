@@ -72,6 +72,7 @@ type ToWatchMediaEntity = {
 
 export enum REACT_QUERY_API_KEYS {
   WATCHED = 'watched',
+  TO_WATCH = 'to_watch',
   OMDB_SEARCH = 'omdb_search',
   OMDB_SEARCH_BY_ID = 'omdb_search_by_id',
   OMDB_SEARCH_BY_TITLE = 'omdb_search_by_title',
@@ -89,10 +90,13 @@ export type Tab = {
 };
 
 export enum ButtonColor {
-  DEFAULT = 'gray',
+  LIGHT = '#ffffff',
+  DARK = '#000000',
   SUCCESS = '#00873c',
   WARNING = 'orange',
   DANGER = '#fe2b2b',
+  ACTION = '#005fff',
+  DISABLED = '#c3c3c3',
 }
 
 export enum RatingSource {

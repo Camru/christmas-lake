@@ -47,7 +47,7 @@ const greenlightApi = {
     return data.media;
   },
   fetchToWatchMedia: async (
-    params: FetchMediaParams
+    params?: FetchMediaParams
   ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {

@@ -9,7 +9,6 @@ import {
   SearchResult,
   MediaEntity,
 } from '../src/types/types';
-import {ratioToPercentage} from '../src/helpers/utils';
 
 import './ToWatchItem.less';
 
@@ -75,17 +74,6 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
     });
   };
 
-  //TODO: [cam]
-  // When at least 60% of reviews for a movie or TV show are positive, a red
-  // tomato is displayed to indicate its Fresh status.
-
-  // Green splat tomato When less than 60% of reviews for a movie or TV show are
-  // positive, a green splat is displayed to indicate its Rotten status.
-
-  // Faded tomato When there is no Tomatometer® score available, which could be
-  // because the Title hasn’t released yet or there are not enough ratings to
-  // generate a score
-
   const renderRatings = () => {
     if (isFetching) {
       return <p>loading ratings...</p>;
@@ -128,10 +116,10 @@ const ToWatchItem = ({item}: ToWatchItemProps): JSX.Element => {
         <div className="to-watch-item-extra-details">
           {renderExtraDetails()}
         </div>
-        <div className="to-watch-item-ratings">{renderRatings()}</div>
+        <Box >{renderRatings()}</Box>
       </div>
       <div className="to-watch-item-footer">
-        <Box gap={10} alignItems="center">
+        <Box gap={10} alignItems="center" width="100%">
           <AddWatchedButton
             item={searchResult}
             isAlreadyAdded={false}

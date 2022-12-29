@@ -3,10 +3,12 @@ import {useState} from 'react';
 import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
 import {REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
 import Button from '../Shared/Button/Button';
+import IconButton from '../Shared/Button/IconButton';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
   isAlreadyAdded: boolean;
+  isIconButton: boolean;
   item: SearchResult;
 };
 
@@ -18,7 +20,7 @@ const convertToMediaEntity = (item: SearchResult): CreateWatchedMediaParams => {
     mediaType: item.Type,
     thumbnail: item.Poster,
     imdbID: item.imdbID,
-    rating: '8.0/10.0',
+    rating: '',
     watched: false,
   };
 };
@@ -26,6 +28,7 @@ const convertToMediaEntity = (item: SearchResult): CreateWatchedMediaParams => {
 const AddToWatchButton = ({
   item,
   isAlreadyAdded,
+  isIconButton,
   children,
 }: AddToWatchButtonProps): JSX.Element => {
   const [isSuccessfullyAdded, setIsSuccessfullyAdded] =
@@ -62,12 +65,14 @@ const AddToWatchButton = ({
     return 'Added';
   };
 
+  const ButtonComp = isIconButton ? IconButton : Button;
+
   return (
-    <Button
+    <ButtonComp
       onClick={handleAddToWatchList}
       disabled={isSuccessfullyAdded || isAlreadyAdded}>
       {renderButtonText()}
-    </Button>
+    </ButtonComp>
   );
 };
 

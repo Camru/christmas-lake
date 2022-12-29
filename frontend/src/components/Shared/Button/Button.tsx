@@ -13,12 +13,26 @@ type ButtonProps = {
   color?: ButtonColor;
 };
 
-const Button = ({color, children, ...rest}: ButtonProps): JSX.Element => {
+const Button = ({
+  color,
+  children,
+  disabled,
+  ...rest
+}: ButtonProps): JSX.Element => {
+  const getBackgroundColor = () => {
+    if (disabled) {
+      return '';
+    }
+
+    return color ? color : ButtonColor.LIGHT;
+  };
+
   return (
     <button
       className="button-primary"
+      disabled={disabled}
       {...rest}
-      style={{backgroundColor: color ? color : ButtonColor.DEFAULT}}>
+      style={{backgroundColor: getBackgroundColor()}}>
       {children}
     </button>
   );

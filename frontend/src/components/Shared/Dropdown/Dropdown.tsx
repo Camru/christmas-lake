@@ -1,6 +1,9 @@
+import './Dropdown.less';
+
 export type Option = {
   value: string;
   label: string;
+  isClientSort?: boolean;
 };
 
 type DropdownProps = {

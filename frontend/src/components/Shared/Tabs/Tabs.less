@@ -1,17 +1,17 @@
 .tab {
 	min-width: fit-content;
 	width: 80px;
-	padding: 6px;
+	padding: var(--input-padding);
 	background-color: transparent;
 	border: 1px solid #818181;
 	border-radius: var(--border-radius);
 	color: var(--color-gray);
 	cursor: pointer;
-	text-transform: capitalize;
 
 	&.active {
 		background-color: var(--color-primary);
 		border-color: var(--color-primary);
 		color: white;
+		outline: 1px solid #089dff;
 	}
 }

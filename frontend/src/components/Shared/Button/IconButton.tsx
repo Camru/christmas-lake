@@ -3,20 +3,20 @@ import {ButtonColor} from '../../../types/types';
 
 import './Button.less';
 
-type IconButtonProps = {
+interface IconButtonProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
   onClick: () => void;
   color?: ButtonColor;
-};
+}
 
 const IconButton = ({
-  color,
+  color: iconColor,
   children,
   ...rest
-}: IconButtonProps): JSX.Element => {
-  const backgroundColor = color ? color : ButtonColor.DEFAULT;
+}: Partial<IconButtonProps>): JSX.Element => {
+  const color = iconColor ? iconColor : ButtonColor.LIGHT;
   return (
-    <button className="icon-button" {...rest} style={{backgroundColor}}>
+    <button className="icon-button" {...rest} style={{color}}>
       {children}
     </button>
   );

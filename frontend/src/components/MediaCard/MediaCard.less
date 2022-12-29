@@ -4,6 +4,7 @@
 	position: relative;
 	width: var(--media-card-width);
 	height: var(--media-card-height);
+	border: 1px solid #545454;
 	border-radius: var(--media-card-border-radius);
 	background-color: #1c1330;
 	color: white;
@@ -22,19 +23,22 @@
 		left: 0;
 		backdrop-filter: blur(4px);
 		background-color: #10122dc9;
+		border-radius: 0px 0px 9px 9px;
 
 	}
 
 	.media-card-img {
 		flex: 1;
-		background: url('../../images/metacritic.png');
+		background: url('../../images/test.png');
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center;
+		border-radius: calc(var(--media-card-border-radius) - 1px);
 	}
 
 	.media-card-footer {
 		padding: var(--header-padding);
+		font-size: 14px;
 	}
 
 }

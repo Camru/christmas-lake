@@ -1,10 +1,9 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import greenlightApi, {CreateWatchedMediaParams} from '../../api/greenlightApi';
-import {floatToPercentage, getCurrentDateInputValue} from '../../helpers/utils';
+import {getCurrentDateInputValue} from '../../helpers/utils';
 import {
   ButtonColor,
-  RatingSource,
   REACT_QUERY_API_KEYS,
   SearchResult,
 } from '../../types/types';
@@ -12,7 +11,7 @@ import Box from '../Shared/Box/Box';
 import Button from '../Shared/Button/Button';
 import Modal from '../Shared/Box/Modal/Modal';
 import IconButton from '../Shared/Button/IconButton';
-import Rating from '../Shared/Rating/Rating';
+import WatchedFields from '../Shared/WatchedFields';
 
 type AddWatchedButtonProps = {
   children: React.ReactNode;
@@ -88,12 +87,12 @@ const AddWatchedButton = ({
     return 'Added';
   };
 
-  const handleSelectDateWatched = (e: any) => {
-    setDateWatched(e.target.value);
+  const handleSelectDateWatched = (dateWatched: string) => {
+    setDateWatched(dateWatched);
   };
 
-  const handleChangeRating = (e: any) => {
-    setUserRating(e.target.value);
+  const handleChangeRating = (userRating: string) => {
+    setUserRating(userRating);
   };
 
   const handleOpenModal = () => {
@@ -104,38 +103,30 @@ const AddWatchedButton = ({
     return (
       <Modal title="Add to Watched list" onClose={() => setIsModalOpen(false)}>
         <Box flexDirection="column" alignItems="end" gap={10}>
-          <Box flexDirection="column" gap={10} width="100%">
-            <input
-              type="date"
-              onChange={handleSelectDateWatched}
-              value={dateWatched}
-            />
-            <Box justifyContent="space-between" width="100%" gap={10}>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                step="0.1"
-                value={userRating}
-                onChange={handleChangeRating}
-                style={{width: '100%'}}
-              />
-              <div
-                style={{
-                  width: '30px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
-                <Rating
-                  value={userRating}
-                  source={RatingSource.ROTTEN_TOMATOES}
-                  type="float"
-                />
-              </div>
-            </Box>
-          </Box>
+          <WatchedFields
+            userRating={userRating}
+            dateWatched={dateWatched}
+            ratingChangeHandler={handleChangeRating}
+            dateChangeHandler={handleSelectDateWatched}
+          />
           <Button onClick={handleAddToWatchList} color={ButtonColor.SUCCESS}>
-            Add
+            <Box gap={5}>
+              <svg
+                width="17px"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              Add
+            </Box>
           </Button>
         </Box>
       </Modal>
