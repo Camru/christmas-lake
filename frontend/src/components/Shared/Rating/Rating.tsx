@@ -17,8 +17,9 @@ type RatingProps = {
 
 const imgStyle = {height: '16px', width: '16px'};
 
-//TODO: [cam] make a rating source that is user rating and displays the RT
-// popcorn icons instead of tomatoes
+//TODO: [cam] make a rating source that is user rating (since we are currently
+// using RT for user rating)and displays the RT popcorn icons instead of
+// tomatoes
 
 const Rating = ({value, source, type}: RatingProps): JSX.Element => {
   const getDisplayValue = () => {

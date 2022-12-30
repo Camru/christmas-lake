@@ -1,12 +1,8 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
-import greenlightApi from '../../api/greenlightApi';
-import {
-  getCurrentDateInputValue,
-  getFilteredMediaEntities,
-  getFormattedDate,
-} from '../../helpers/utils';
+import greenlightApi, {UpdateWatchedMediaParams} from '../../api/greenlightApi';
+import {getFilteredMediaEntities, getFormattedDate} from '../../helpers/utils';
 import {
   MediaType,
   REACT_QUERY_API_KEYS,
@@ -46,15 +42,35 @@ const WatchedList = (): JSX.Element => {
     retry: false,
   });
 
-  const deleteMovieMutation = useMutation({
+  const deleteMediaEntityMutation = useMutation({
     mutationFn: greenlightApi.deleteMovie,
     onSuccess: () => {
       queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
     },
   });
 
-  const handleDeleteMovie = (movieId: string) => {
-    deleteMovieMutation.mutate(movieId);
+  const updateMediaEntityMutation = useMutation({
+    mutationFn: greenlightApi.updateWatchedMedia,
+    onSuccess: () => {
+      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
+    },
+  });
+
+  const handleCloseEditModal = () => {
+    setEditModalId('');
+  };
+
+  const handleDeleteMediaEntity = (mediaEntityId: string) => {
+    deleteMediaEntityMutation.mutate(mediaEntityId);
+  };
+
+  const handleUpdateMediaEntity = (mediaEntity: MediaEntity) => {
+    const params: UpdateWatchedMediaParams = {
+      dateWatched: dateWatched ? dateWatched : mediaEntity.dateWatched,
+      rating: userRating ? userRating : mediaEntity.rating,
+    };
+    updateMediaEntityMutation.mutate({mediaEntityId: mediaEntity.id, params});
+    handleCloseEditModal();
   };
 
   const renderWatchedList = () => {
@@ -98,13 +114,9 @@ const WatchedList = (): JSX.Element => {
       setUserRating(userRating);
     };
 
-    //TODO: [cam] Remove the delete button, instead just have an edit button that
-    // opens a modal to edit the rating/date watched and also has a delete button there
-    // if you really need to delete it
-
     const renderModal = (item: MediaEntity) => {
       return (
-        <Modal title="" onClose={() => setEditModalId('')}>
+        <Modal title={item.title} onClose={handleCloseEditModal}>
           <Box flexDirection="column" gap={20}>
             <WatchedFields
               userRating={userRating ? userRating : item.rating}
@@ -114,7 +126,7 @@ const WatchedList = (): JSX.Element => {
             />
             <Box gap={10}>
               <Button
-                onClick={() => handleDeleteMovie(editModalId)}
+                onClick={() => handleDeleteMediaEntity(editModalId)}
                 color={ButtonColor.DANGER}>
                 <svg
                   width={15}
@@ -133,7 +145,7 @@ const WatchedList = (): JSX.Element => {
                 Remove
               </Button>
               <Button
-                onClick={() => {}}
+                onClick={() => handleUpdateMediaEntity(item)}
                 color={ButtonColor.ACTION}
                 disabled={!userRating && !dateWatched}>
                 Update
@@ -143,9 +155,6 @@ const WatchedList = (): JSX.Element => {
         </Modal>
       );
     };
-
-    //TODO: [cam]
-    //  handleDeleteMovie(item.id.toString())
 
     return filteredItems().map((item: MediaEntity) => {
       return (

@@ -4,16 +4,23 @@ import ReactDOM from 'react-dom';
 
 import './Modal.less';
 import {ButtonColor} from '../../../../types/types';
+import classNames from 'classnames';
 
 type ModalProps = {
   children: React.ReactNode;
   onClose: () => void;
   title: string;
+  className?: string;
 };
 
 const OVERLAY_CLASSNAME = 'modal-overlay';
 
-const Modal = ({onClose, title, children}: ModalProps): JSX.Element => {
+const Modal = ({
+  onClose,
+  title,
+  className,
+  children,
+}: ModalProps): JSX.Element => {
   const handleClickOutside = (e: any) => {
     if (e.target.className === OVERLAY_CLASSNAME) {
       onClose();
@@ -30,7 +37,7 @@ const Modal = ({onClose, title, children}: ModalProps): JSX.Element => {
 
   return ReactDOM.createPortal(
     <div className={OVERLAY_CLASSNAME}>
-      <div className="modal">
+      <div className={classNames('modal', className)}>
         <div className="modal-header">
           <h1 className="modal-header-title">{title}</h1>
           <IconButton onClick={onClose} color={ButtonColor.DANGER}>

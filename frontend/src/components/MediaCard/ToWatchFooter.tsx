@@ -31,6 +31,8 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
   const queryClient = useQueryClient();
   const [isDeleteItemModalOpen, setIsDeleteItemModalOpen] =
     useState<boolean>(false);
+  const [isExtraDetailsModalOpen, setIsExtraDetailsModalOpen] =
+    useState<boolean>(false);
 
   //TODO: [cam] Move this into ToWatchList so we can sort by the RT Rating
   const {data, isFetching} = useQuery({
@@ -58,31 +60,62 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       return <p>loading extra details...</p>;
     }
 
+    // DEFINITE
+    // Year: string;
+    // Runtime: string;
+    // Director: string;
+    // Writer: string;
+    // Country: string;
+
+    // MAYBE
+    // Genre: string;
+    // Actors: string;
+    // Plot: string;
+    // totalSeasons: string;
+    // Type: string;
+    // Language: string;
+
     const details = [
       {
+        label: 'Year',
+        value: data?.Year || '1902',
+      },
+      {
+        label: 'Type',
+        value: data?.Type || 'series',
+      },
+      {
         label: 'Writer',
-        value: data?.Writer,
+        value: data?.Writer || 'John Barthalamew',
       },
       {
         label: 'Director',
-        value: data?.Director,
+        value: data?.Director || 'David Amfries',
       },
       {
         label: 'Runtime',
-        value: data?.Runtime,
+        value: data?.Runtime || '102 minutes', //TODO: [cam] convert this to (1 hour, 30 minutes) format
       },
       {
         label: 'Country',
-        value: data?.Country,
+        value: data?.Country || "Brazil",
+      },
+      {
+        label: 'Language',
+        value: data?.Language,
+      },
+      {
+        label: 'Total Seasons',
+        value: data?.totalSeasons, //TODO: [cam] check if this is actually lowercase unlike the others
       },
     ];
 
     return details.map(({label, value}) => {
       return (
-        <div key={label}>
-          <label>{label}</label>
-          <p>{value}</p>
-        </div>
+        <Box key={label} gap={10} justifyContent="space-between">
+          <label>{label}:</label>
+          <p>{value ? value : 'N/A'}</p>
+        </Box>
       );
     });
   };
@@ -124,8 +157,21 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
               setIsDeleteItemModalOpen(false);
             }}
             color={ButtonColor.DANGER}>
-            Remove 
+            Remove
           </Button>
+        </Box>
+      </Modal>
+    );
+  };
+
+  const renderExtraDetailsModal = () => {
+    return (
+      <Modal
+        className="dark"
+        title={item.title}
+        onClose={() => setIsExtraDetailsModalOpen(false)}>
+        <Box flexDirection="column" gap={10}>
+          {renderExtraDetails()}
         </Box>
       </Modal>
     );
@@ -165,7 +211,6 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
         </AddWatchedButton>
 
         <IconButton
-          // onClick={() => handleDeleteMovie(item.id.toString())}
           onClick={handleOpenDeleteItemModal}
           color={ButtonColor.DANGER}>
           <svg
@@ -182,8 +227,26 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
             />
           </svg>
         </IconButton>
+        <IconButton
+          onClick={() => setIsExtraDetailsModalOpen(true)}
+          color={ButtonColor.ACTION}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+            />
+          </svg>
+        </IconButton>
       </Box>
       {isDeleteItemModalOpen && renderDeleteItemModal()}
+      {isExtraDetailsModalOpen && renderExtraDetailsModal()}
     </Box>
   );
 };

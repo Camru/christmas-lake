@@ -26,7 +26,7 @@ const getSortOptions = (pathname: string): Option[] => {
     return [
       {label: 'Title', value: 'title'},
       {label: 'Release Date', value: 'year'},
-      {label: 'Date Added', value: 'datewatched'},
+      {label: 'Date Added', value: 'dateWatched'},
       ...CLIENT_SORT_OPTIONS,
     ];
   }
@@ -35,7 +35,7 @@ const getSortOptions = (pathname: string): Option[] => {
     return [
       {label: 'Title', value: 'title'},
       {label: 'Release Date', value: 'year'},
-      {label: 'Date Watched', value: 'datewatched'},
+      {label: 'Date Watched', value: 'dateWatched'},
       {label: 'Our Rating', value: 'rating'},
     ];
   }
@@ -58,7 +58,7 @@ const ActionBar = () => {
 
   useEffect(() => {
     if (!sortParam) {
-      updateSearchParams(SearchParam.SORT, '-datewatched');
+      updateSearchParams(SearchParam.SORT, '-dateWatched');
       return;
     }
   }, [sortParam, pathname, search]);

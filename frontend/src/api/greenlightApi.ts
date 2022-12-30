@@ -10,13 +10,18 @@ const API_DELAY = 3000;
 
 export type CreateWatchedMediaParams = {
   title: string;
-  dateWatched: string;
-  mediaType: MediaType;
+  datewatched: string;
+  mediatype: MediaType;
   thumbnail: string;
-  imdbID: string;
+  imdbid: string;
   year: string;
   rating: string;
   watched: boolean;
+};
+
+export type UpdateWatchedMediaParams = {
+  dateWatched: string;
+  rating: string;
 };
 
 type FetchMediaParams = {
@@ -66,6 +71,19 @@ const greenlightApi = {
   ): Promise<MediaEntity> => {
     const {data} = await instance.post('movies', params);
     waitFor(API_DELAY);
+    return data.media;
+  },
+
+  updateWatchedMedia: async ({
+    mediaEntityId,
+    params,
+  }: {
+    mediaEntityId: string;
+    params: UpdateWatchedMediaParams;
+  }): Promise<MediaEntity> => {
+    const {data} = await instance.put(`movies/${mediaEntityId}`, params);
+    waitFor(API_DELAY);
+    console.log('[cam] data', data);
     return data.media;
   },
 
