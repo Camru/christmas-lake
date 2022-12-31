@@ -83,7 +83,6 @@ const greenlightApi = {
   }): Promise<MediaEntity> => {
     const {data} = await instance.put(`movies/${mediaEntityId}`, params);
     waitFor(API_DELAY);
-    console.log('[cam] data', data);
     return data.media;
   },
 

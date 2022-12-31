@@ -161,7 +161,6 @@ const WatchedList = (): JSX.Element => {
         <MediaCard key={item.imdbID + item.dateWatched} item={item}>
           <Box justifyContent="space-between" alignItems="center" width="100%">
             {editModalId === item.id && renderModal(item)}
-
             {item.watched && getFormattedDate(item.dateWatched)}
             <Rating
               value={item.rating}

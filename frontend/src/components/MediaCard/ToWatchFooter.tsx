@@ -3,6 +3,10 @@ import {useState} from 'react';
 import greenlightApi from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
 import {
+  capitalizeFirstChar,
+  convertMinutesToHoursAndMinutes,
+} from '../../helpers/utils';
+import {
   ButtonColor,
   MediaEntity,
   MediaRating,
@@ -43,7 +47,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
   const deleteMovieMutation = useMutation({
     mutationFn: greenlightApi.deleteMovie,
     onSuccess: () => {
-      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
+      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.TO_WATCH]);
     },
   });
 
@@ -78,46 +82,76 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     const details = [
       {
         label: 'Year',
-        value: data?.Year || '1902',
+        value: data?.Year,
       },
       {
         label: 'Type',
-        value: data?.Type || 'series',
+        value: capitalizeFirstChar(data?.Type),
+      },
+      {
+        label: 'Total Seasons',
+        value: data?.totalSeasons,
+        isHidden: data?.Type === 'movie',
       },
       {
         label: 'Writer',
-        value: data?.Writer || 'John Barthalamew',
+        value: data?.Writer,
       },
       {
         label: 'Director',
-        value: data?.Director || 'David Amfries',
+        value: data?.Director,
       },
       {
         label: 'Runtime',
-        value: data?.Runtime || '102 minutes', //TODO: [cam] convert this to (1 hour, 30 minutes) format
+        value: convertMinutesToHoursAndMinutes(data?.Runtime),
       },
       {
         label: 'Country',
-        value: data?.Country || "Brazil",
+        value: data?.Country,
       },
       {
         label: 'Language',
         value: data?.Language,
       },
       {
-        label: 'Total Seasons',
-        value: data?.totalSeasons, //TODO: [cam] check if this is actually lowercase unlike the others
+        label: 'Genre',
+        value: data?.Genre,
+      },
+      {
+        label: 'Plot',
+        value: data?.Plot,
+        style: {width: '200px', height: '120px', overflow: 'scroll'},
       },
     ];
 
-    return details.map(({label, value}) => {
+    const labels = details.map(({label, isHidden}) => {
+      if (isHidden) {
+        return null;
+      }
+      return <label key={label}>{label}</label>;
+    });
+
+    const values = details.map(({value, label, isHidden, style = {}}) => {
+      if (isHidden) {
+        return null;
+      }
       return (
-        <Box key={label} gap={10} justifyContent="space-between">
-          <label>{label}:</label>
-          <p>{value ? value : 'N/A'}</p>
-        </Box>
+        <p key={label} style={style}>
+          {value ? value : 'N/A'}
+        </p>
       );
     });
+
+    return (
+      <Box gap={30}>
+        <Box flexDirection="column" gap={10}>
+          {labels}
+        </Box>
+        <Box flexDirection="column" gap={10}>
+          {values}
+        </Box>
+      </Box>
+    );
   };
 
   const renderRatings = () => {
@@ -169,6 +203,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       <Modal
         className="dark"
         title={item.title}
+        subtitle={renderRatings()}
         onClose={() => setIsExtraDetailsModalOpen(false)}>
         <Box flexDirection="column" gap={10}>
           {renderExtraDetails()}
@@ -187,7 +222,6 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
 
   return (
     <Box width="100%" gap={10} alignItems="center" flexDirection="column">
-      {/* <div className="to-watch-item-extra-details">{renderExtraDetails()}</div> */}
       <Box width="100%">{renderRatings()}</Box>
       <Box>
         <AddWatchedButton
@@ -240,7 +274,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+              d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
             />
           </svg>
         </IconButton>

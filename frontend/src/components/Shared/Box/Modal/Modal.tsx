@@ -5,11 +5,13 @@ import ReactDOM from 'react-dom';
 import './Modal.less';
 import {ButtonColor} from '../../../../types/types';
 import classNames from 'classnames';
+import Box from '../Box';
 
 type ModalProps = {
   children: React.ReactNode;
   onClose: () => void;
   title: string;
+  subtitle?: React.ReactElement;
   className?: string;
 };
 
@@ -18,6 +20,7 @@ const OVERLAY_CLASSNAME = 'modal-overlay';
 const Modal = ({
   onClose,
   title,
+  subtitle,
   className,
   children,
 }: ModalProps): JSX.Element => {
@@ -27,11 +30,19 @@ const Modal = ({
     }
   };
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     window.addEventListener('click', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -39,7 +50,15 @@ const Modal = ({
     <div className={OVERLAY_CLASSNAME}>
       <div className={classNames('modal', className)}>
         <div className="modal-header">
-          <h1 className="modal-header-title">{title}</h1>
+          <Box
+            justifyContent="space-between"
+            alignItems="center"
+            mt="10px"
+            mb="20px"
+            gap={20}>
+            <h1 className="modal-header-title">{title}</h1>
+            {subtitle && subtitle}
+          </Box>
           <IconButton onClick={onClose} color={ButtonColor.DANGER}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

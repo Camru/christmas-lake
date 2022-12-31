@@ -74,3 +74,32 @@ export const getFilteredMediaEntities = (
     filterBySearch(item, searchParams.get(SearchParam.SEARCH))
   );
 };
+
+export const convertMinutesToHoursAndMinutes = (minutes?: string): string => {
+  if (!minutes || minutes === 'N/A') return 'N/A';
+  const numMinutes = parseInt(minutes, 10);
+  const numHours = Math.floor(numMinutes / 60);
+  const remainingMinutes = numMinutes % 60;
+
+  if (numHours === 0) {
+    return `${remainingMinutes} min${remainingMinutes === 1 ? '' : 's'}`;
+  }
+
+  if (remainingMinutes === 0) {
+    return `${numHours} hour${numHours === 1 ? '' : 's'}`;
+  }
+
+  return `${numHours} hour${
+    numHours === 1 ? '' : 's'
+  }, ${remainingMinutes} min${remainingMinutes === 1 ? '' : 's'}`;
+};
+
+export const capitalizeFirstChar = (str?: string): string => {
+  if (!str) {
+    return '';
+  }
+
+  const firstChar = str.charAt(0);
+  const capitalizedFirstChar = firstChar.toUpperCase();
+  return str.replace(firstChar, capitalizedFirstChar);
+};
