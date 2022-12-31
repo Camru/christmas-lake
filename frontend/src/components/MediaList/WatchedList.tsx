@@ -114,6 +114,8 @@ const WatchedList = (): JSX.Element => {
       setUserRating(userRating);
     };
 
+    //TODO: [cam] Update styling for update/delte buttons
+
     const renderModal = (item: MediaEntity) => {
       return (
         <Modal title={item.title} onClose={handleCloseEditModal}>
@@ -124,7 +126,7 @@ const WatchedList = (): JSX.Element => {
               dateChangeHandler={handleSelectDateWatched}
               ratingChangeHandler={handleChangeRating}
             />
-            <Box gap={10}>
+            <Box gap={10} justifyContent="end">
               <Button
                 onClick={() => handleDeleteMediaEntity(editModalId)}
                 color={ButtonColor.DANGER}>
