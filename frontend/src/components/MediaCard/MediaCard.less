@@ -1,9 +1,7 @@
 .media-card {
-	--header-padding: 5px 10px;
-
 	position: relative;
-	width: var(--media-card-width);
-	height: var(--media-card-height);
+	// width: var(--media-card-width);
+	// height: var(--media-card-height);
 	border: 1px solid #545454;
 	border-radius: var(--media-card-border-radius);
 	background-color: #1c1330;
@@ -12,8 +10,8 @@
 	.media-card-header {
 		display: flex;
 		align-items: center;
-		padding: var(--header-padding);
 		border-radius: var(--media-card-border-radius) var(--media-card-border-radius) 0 0;
+		font-weight: 500;
 	}
 
 	.media-card-contents {
@@ -22,9 +20,9 @@
 		bottom: 0;
 		left: 0;
 		backdrop-filter: blur(4px);
-		background-color: #10122dc9;
+		background-color: #152636c2;
 		border-radius: 0px 0px 9px 9px;
-
+		padding: 10px;
 	}
 
 	.media-card-img {
@@ -37,7 +35,6 @@
 	}
 
 	.media-card-footer {
-		padding: var(--header-padding);
 		font-size: 14px;
 	}
 

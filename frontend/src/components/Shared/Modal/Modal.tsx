@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
-import IconButton from '../../Button/IconButton';
+import IconButton from '../Button/IconButton';
 import ReactDOM from 'react-dom';
 
 import './Modal.less';
-import {ButtonColor} from '../../../../types/types';
+import {Colors} from '../../../types/types';
 import classNames from 'classnames';
-import Box from '../Box';
+import Box from '../Box/Box';
 
 type ModalProps = {
   children: React.ReactNode;
@@ -59,7 +59,7 @@ const Modal = ({
             <h1 className="modal-header-title">{title}</h1>
             {subtitle && subtitle}
           </Box>
-          <IconButton onClick={onClose} color={ButtonColor.DANGER}>
+          <IconButton onClick={onClose} color={Colors.LIGHT}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -70,7 +70,7 @@ const Modal = ({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M6 18L18 6M6 6l12 12"
               />
             </svg>
           </IconButton>

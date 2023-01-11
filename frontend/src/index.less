@@ -3,13 +3,17 @@
   --color-gray: #e7e7e7;
   --color-gray-1: #c3c3c3;
   --color-primary: #29507a;
-  --color-secondary: #00873c;
-  --color-action: #005fff;
+  --color-action: #316dd1;
   --color-header-bg: #000;
   --color-body-bg: #123038;
+  --color-input-fg: #b3b3b3;
+  --color-input-bg: #205360;
+  --color-modal-bg: #163b44;
+  --color-watched: #7500dd;
+  --color-to-watch: #00873c;
 
   // Spacing
-  --padding-md: 33px;
+  --padding-md: 30px;
   --border-radius: 3px;
   --input-padding: 6px;
 
@@ -61,5 +65,23 @@ select {
 button {
   &:focus-within {
     outline: none;
+  }
+}
+
+.date-picker-input {
+  border: none;
+  outline: none;
+  padding: var(--input-padding);
+  border-radius: var(--border-radius);
+  background-color: var(--color-input-bg);
+  color: white;
+
+  &::-webkit-calendar-picker-indicator {
+    color-scheme: dark;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    cursor: pointer;
   }
 }

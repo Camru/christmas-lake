@@ -1,5 +1,7 @@
 import TomatoSVG from '../../../images/tomato.svg';
 import SplatSVG from '../../../images/splat.svg';
+import PopcornTomatoSVG from '../../../images/popcorn_tomato.svg';
+import PopcornSplatSVG from '../../../images/popcorn_splat.svg';
 import NoRatingSVG from '../../../images/norating.svg';
 import ImdbPNG from '../../../images/imdb.png';
 import MetacriticPNG from '../../../images/metacritic.png';
@@ -29,6 +31,7 @@ const Rating = ({value, source, type}: RatingProps): JSX.Element => {
 
     return ratioToPercentage(value);
   };
+
   const getRatingSourceIcon = () => {
     if (source === RatingSource.ROTTEN_TOMATOES) {
       if (!value) {
@@ -48,6 +51,18 @@ const Rating = ({value, source, type}: RatingProps): JSX.Element => {
       }
 
       return <img src={SplatSVG} alt="splat" />;
+    }
+
+    if (source === RatingSource.USER_RATING) {
+      if (!value) {
+        return <img src={NoRatingSVG} alt="no rating" />;
+      }
+
+      if (parseInt(value) >= 6.0) {
+        return <img src={PopcornTomatoSVG} alt="tomato" />;
+      }
+
+      return <img src={PopcornSplatSVG} alt="splat" />;
     }
 
     if (source === RatingSource.IMDB) {

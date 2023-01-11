@@ -1,8 +1,15 @@
 .actionbar-search {
-	padding: var(--input-padding);
+	background-color: var(--color-input-bg);
+	color: white;
+	padding: var(--input-padding) 10px;
 	padding-left: 15px;
 	border: none;
 	border-radius: var(--border-radius);
+	height: 29px;
+
+	&::placeholder {
+		color: var(--color-input-fg);
+	}
 }
 
 .sort-dropdown-label {
@@ -12,7 +19,6 @@
 }
 
 .sort-icon {
-
 	&:hover {
 		cursor: pointer;
 		opacity: 0.6;

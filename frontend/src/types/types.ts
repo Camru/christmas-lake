@@ -12,7 +12,8 @@ export type MediaEntity = {
   thumbnail: string;
   imdbID: string;
   year: string;
-  rating: string;
+  rating: number;
+  ratings: string;
   watched: boolean;
 };
 
@@ -89,24 +90,37 @@ export type Tab = {
   value: string;
 };
 
-export enum ButtonColor {
+export enum Colors {
   LIGHT = '#ffffff',
   DARK = '#000000',
-  SUCCESS = '#00873c',
   WARNING = 'orange',
   DANGER = '#fe2b2b',
-  ACTION = '#005fff',
+  ACTION = '#316dd1',
   DISABLED = '#c3c3c3',
+  WATCHED = '#7500dd',
+  TO_WATCH = '#00873c',
 }
 
 export enum RatingSource {
   ROTTEN_TOMATOES = 'Rotten Tomatoes',
   IMDB = 'Internet Movie Database',
   METACRITIC = 'Metacritic',
+  USER_RATING = 'userRating',
+}
+
+export enum RatingSourceSortParam {
+  ROTTEN_TOMATOES = 'rtRating',
+  IMDB = 'imdbRating',
 }
 
 export enum SearchParam {
   MEDIA_TYPE = 'mediaType',
   SEARCH = 'search',
   SORT = 'sort',
+}
+
+export enum Notifications {
+  ADDED = 'ADDED',
+  REMOVED = 'REMOVED',
+  NONE = 'NONE',
 }

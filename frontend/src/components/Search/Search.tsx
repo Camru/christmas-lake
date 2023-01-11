@@ -2,16 +2,15 @@ import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';
 import greenlightApi from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
-import {
-  ButtonColor,
-  REACT_QUERY_API_KEYS,
-  SearchResult,
-} from '../../types/types';
-import AddToWatchButton from '../AddButtons/AddToWatchButton';
-import AddWatchedButton from '../AddButtons/AddWatchedButton';
+import {Colors, REACT_QUERY_API_KEYS, SearchResult} from '../../types/types';
+import MediaCard from '../MediaCard/MediaCard';
 import Box from '../Shared/Box/Box';
 import IconButton from '../Shared/Button/IconButton';
 import './Search.less';
+import SearchItemFooter from './SearchItemFooter';
+
+//TODO: [cam] Move search to the action bar and just display what list it's
+// already added to in the media card
 
 const Search = () => {
   const [currentSearch, setCurrentSearch] = useState('');
@@ -25,13 +24,13 @@ const Search = () => {
 
   const fetchWatchedMediaQuery = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.WATCHED],
-    queryFn: greenlightApi.fetchWatchedMedia,
+    queryFn: () => greenlightApi.fetchWatchedMedia(),
     retry: false,
   });
 
   const fetchToWatchMedia = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.TO_WATCH],
-    queryFn: greenlightApi.fetchToWatchMedia,
+    queryFn: () => greenlightApi.fetchToWatchMedia(),
     retry: false,
   });
 
@@ -67,6 +66,7 @@ const Search = () => {
     );
   };
 
+  //TODO: [cam] allow reversing the action by removing it once you add it
   const getIsAlreadyAddedToWatchList = (imdbId: string) => {
     if (fetchToWatchMedia.isLoading || !fetchToWatchMedia.data) {
       return false;
@@ -77,64 +77,20 @@ const Search = () => {
     });
   };
 
+  //TODO: [cam]  add footer component that fetches the ratings
   const renderFoundItems = (item: SearchResult) => {
     return (
-      <Box key={item.imdbID} className="media-card" flexDirection="column">
-        <img
-          className="media-card-img"
-          src={item.Poster}
-          alt="media-thumbnail"
+      <MediaCard
+        key={item.imdbID}
+        id={item.imdbID}
+        title={item.Title}
+        thumbnail={item.Poster}>
+        <SearchItemFooter
+          item={item}
+          isAlreadyWatched={getIsAlreadyWatched(item.imdbID)}
+          isAlreadyAddedToWatchList={getIsAlreadyAddedToWatchList(item.imdbID)}
         />
-        <Box className="media-card-contents" flexDirection="column">
-          <Box className="media-card-header" justifyContent="space-between">
-            <div>{item.Title}</div>
-            <div>{item.Year}</div>
-            <div>{item.Type}</div>
-          </Box>
-          <Box className="media-card-footer">
-            <Box gap={10}>
-              <AddWatchedButton
-                item={item}
-                isAlreadyAdded={getIsAlreadyWatched(item.imdbID)}
-                isIconButton>
-                <svg
-                  width={17}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.5 12.75l6 6 9-13.5"
-                  />
-                </svg>
-              </AddWatchedButton>
-              <AddToWatchButton
-                item={item}
-                isAlreadyAdded={getIsAlreadyAddedToWatchList(item.imdbID)}
-                isIconButton>
-                <svg
-                  width={17}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-              </AddToWatchButton>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+      </MediaCard>
     );
   };
 
@@ -145,18 +101,18 @@ const Search = () => {
   };
 
   return (
-    <div className="search">
-      <header>
-        <h1>Search</h1>
+    <Box flexDirection="column">
+      <Box p="20px 0 25px 0">
+        <h1 style={{fontSize: 24, margin: 0, marginRight: 'auto'}}>Search</h1>
         <Box className="search-input" alignItems="center" position="relative">
           <input
-            placeholder="search for a movie/show.."
+            placeholder="Search for a movie/show.."
             onChange={handleChange}
             onKeyDown={handleKeyDown}
           />
-          <IconButton onClick={handleSearch} color={ButtonColor.ACTION}>
+          <IconButton onClick={handleSearch} color={Colors.LIGHT}>
             <svg
-              width="17px"
+              width="27px"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -171,11 +127,9 @@ const Search = () => {
             </svg>
           </IconButton>
         </Box>
-      </header>
-      <Box gap={10} flexWrap="wrap">
-        {renderSearchResults()}
       </Box>
-    </div>
+      <div className="media-card-list">{renderSearchResults()}</div>
+    </Box>
   );
 };
 

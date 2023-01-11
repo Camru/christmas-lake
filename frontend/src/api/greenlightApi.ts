@@ -1,27 +1,30 @@
 import axios from 'axios';
-import {waitFor} from '../helpers/utils';
 import {MediaType, MediaEntity} from '../types/types';
 
 const instance = axios.create({
   baseURL: 'http://localhost:4000/v1/',
 });
 
-const API_DELAY = 3000;
+export type Rating = {
+  Source: string;
+  Value: string;
+};
 
 export type CreateWatchedMediaParams = {
   title: string;
-  datewatched: string;
-  mediatype: MediaType;
+  dateWatched: string;
+  mediaType: MediaType;
   thumbnail: string;
-  imdbid: string;
+  imdbID: string;
   year: string;
-  rating: string;
+  rating: number;
+  ratings: string;
   watched: boolean;
 };
 
 export type UpdateWatchedMediaParams = {
   dateWatched: string;
-  rating: string;
+  rating: number;
 };
 
 type FetchMediaParams = {
@@ -33,12 +36,10 @@ const greenlightApi = {
   fetchAllMedia: async (): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies');
 
-    waitFor(API_DELAY);
-
     return data.media;
   },
   fetchWatchedMedia: async (
-    params: FetchMediaParams
+    params?: FetchMediaParams
   ): Promise<MediaEntity[]> => {
     const {data} = await instance.get('movies', {
       params: {
@@ -46,8 +47,6 @@ const greenlightApi = {
         ...params,
       },
     });
-
-    waitFor(API_DELAY);
 
     return data.media;
   },
@@ -61,8 +60,6 @@ const greenlightApi = {
       },
     });
 
-    waitFor(API_DELAY);
-
     return data.media;
   },
 
@@ -70,7 +67,6 @@ const greenlightApi = {
     params: CreateWatchedMediaParams
   ): Promise<MediaEntity> => {
     const {data} = await instance.post('movies', params);
-    waitFor(API_DELAY);
     return data.media;
   },
 
@@ -82,13 +78,11 @@ const greenlightApi = {
     params: UpdateWatchedMediaParams;
   }): Promise<MediaEntity> => {
     const {data} = await instance.put(`movies/${mediaEntityId}`, params);
-    waitFor(API_DELAY);
     return data.media;
   },
 
   deleteMovie: async (movieId: string): Promise<string> => {
     const {data} = await instance.delete(`movies/${movieId}`);
-    waitFor(API_DELAY);
     return data.message;
   },
 };

@@ -1,24 +1,31 @@
+import classNames from 'classnames';
 import React from 'react';
-import {ButtonColor} from '../../../types/types';
+import {Colors} from '../../../types/types';
 
 import './Button.less';
 
 interface IconButtonProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
   onClick: () => void;
-  color?: ButtonColor;
+  color?: Colors;
   style?: {};
+  disabled?: boolean;
+  className?: string;
 }
 
 const IconButton = ({
   color: iconColor,
+  className,
   children,
   style,
   ...rest
 }: Partial<IconButtonProps>): JSX.Element => {
-  const color = iconColor ? iconColor : ButtonColor.LIGHT;
+  const color = iconColor ? iconColor : Colors.LIGHT;
   return (
-    <button className="icon-button" {...rest} style={{...style, color}}>
+    <button
+      className={classNames('icon-button', className)}
+      {...rest}
+      style={{...style, color}}>
       {children}
     </button>
   );

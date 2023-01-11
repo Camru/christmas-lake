@@ -7,19 +7,20 @@ import {
   convertMinutesToHoursAndMinutes,
 } from '../../helpers/utils';
 import {
-  ButtonColor,
+  Colors,
   MediaEntity,
   MediaRating,
   RatingSource,
   REACT_QUERY_API_KEYS,
   SearchResult,
 } from '../../types/types';
-import AddWatchedButton from '../AddButtons/AddWatchedButton';
 import Box from '../Shared/Box/Box';
-import Modal from '../Shared/Box/Modal/Modal';
+import Modal from '../Shared/Modal/Modal';
 import Button from '../Shared/Button/Button';
 import IconButton from '../Shared/Button/IconButton';
 import Rating from '../Shared/Rating/Rating';
+import AddWatchedButton from '../Shared/Button/AddWatchedButton';
+import Tooltip from '../Shared/Tooltip/Tooltip';
 
 const RatingSourceToKeyMap: Record<string, RatingSource> = {
   'Internet Movie Database': RatingSource.IMDB,
@@ -37,8 +38,8 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     useState<boolean>(false);
   const [isExtraDetailsModalOpen, setIsExtraDetailsModalOpen] =
     useState<boolean>(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
 
-  //TODO: [cam] Move this into ToWatchList so we can sort by the RT Rating
   const {data, isFetching} = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH_BY_ID, item.title],
     queryFn: () => omdbApi.searchByTitle(item.title),
@@ -64,22 +65,6 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       return <p>loading extra details...</p>;
     }
 
-    //TODO: [cam]
-    // DEFINITE
-    // Year: string;
-    // Runtime: string;
-    // Director: string;
-    // Writer: string;
-    // Country: string;
-
-    // MAYBE
-    // Genre: string;
-    // Actors: string;
-    // Plot: string;
-    // totalSeasons: string;
-    // Type: string;
-    // Language: string;
-
     const details = [
       {
         label: 'Year',
@@ -93,6 +78,10 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
         label: 'Total Seasons',
         value: data?.totalSeasons,
         isHidden: data?.Type === 'movie',
+      },
+      {
+        label: 'Actors',
+        value: data?.Actors,
       },
       {
         label: 'Writer',
@@ -156,12 +145,6 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
   };
 
   const renderRatings = () => {
-    if (isFetching) {
-      return <p>loading ratings...</p>;
-    }
-
-    const ratings = data?.Ratings;
-
     const renderRating = (rating: MediaRating) => {
       return (
         <li key={rating.Source} className="rating">
@@ -173,11 +156,18 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       );
     };
 
+    const ratings = JSON.parse(item.ratings) || [];
+
     return (
       <Box className="ratings-list">
-        {ratings?.length ? ratings.map(renderRating) : <p>No Ratings</p>}
+        {ratings.length ? ratings.map(renderRating) : <p>No Ratings</p>}
       </Box>
     );
+  };
+
+  //TODO: [cam]  move tooltip to icon buttons
+  const renderTooltip = () => {
+    return <Tooltip text="Remove from To Watch list" position="right" />;
   };
 
   const renderDeleteItemModal = () => {
@@ -191,7 +181,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
               handleDeleteMovie(item.id.toString());
               setIsDeleteItemModalOpen(false);
             }}
-            color={ButtonColor.DANGER}>
+            color={Colors.DANGER}>
             Remove
           </Button>
         </Box>
@@ -223,8 +213,10 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
 
   return (
     <Box width="100%" gap={10} alignItems="center" flexDirection="column">
-      <Box width="100%">{renderRatings()}</Box>
-      <Box width="100%">
+      <Box width="100%" mt="10px">
+        {renderRatings()}
+      </Box>
+      <Box width="100%" gap={5}>
         <AddWatchedButton
           item={searchResult}
           isAlreadyAdded={false}
@@ -234,19 +226,17 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            strokeWidth={1.5}
+            strokeWidth={2.5}
             stroke="currentColor"
             className="w-6 h-6">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
         </AddWatchedButton>
-        <IconButton
-          onClick={() => setIsExtraDetailsModalOpen(true)}
-          color={ButtonColor.ACTION}>
+        <IconButton onClick={() => setIsExtraDetailsModalOpen(true)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -257,14 +247,15 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+              d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
             />
           </svg>
         </IconButton>
         <IconButton
           onClick={handleOpenDeleteItemModal}
-          color={ButtonColor.DANGER}
-          style={{marginLeft: 'auto'}}>
+          style={{marginLeft: 'auto'}}
+          onPointerEnter={() => setIsTooltipOpen(true)}
+          onPointerLeave={() => setIsTooltipOpen(false)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -278,6 +269,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
               d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
             />
           </svg>
+          {isTooltipOpen && renderTooltip()}
         </IconButton>
       </Box>
       {isDeleteItemModalOpen && renderDeleteItemModal()}

@@ -7,23 +7,23 @@ import React from 'react';
 
 type WatchedItemProps = {
   children?: React.ReactElement;
-  item: MediaEntity;
+  id: string;
+  thumbnail: string;
+  title: string;
 };
 
-// Watched item display
-//  title: string;
-//  dateWatched: string;
-//  mediaType: MediaType;  <--- tv / movie thumbnail
-//  thumbnail: string;
-//  rating: string;
-
-const MediaCard = ({item, children}: WatchedItemProps): JSX.Element => {
+const MediaCard = ({
+  id,
+  thumbnail,
+  title,
+  children,
+}: WatchedItemProps): JSX.Element => {
   return (
-    <Box key={item.imdbID} className="media-card" flexDirection="column">
-      <img className="media-card-img" src={item.thumbnail} />
+    <Box key={id} className="media-card" flexDirection="column">
+      <img className="media-card-img" src={thumbnail} />
       <Box className="media-card-contents" flexDirection="column">
         <Box className="media-card-header" justifyContent="space-between">
-          <div>{item.title}</div>
+          <div>{title}</div>
         </Box>
         <Box className="media-card-footer">{children}</Box>
       </Box>

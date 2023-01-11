@@ -1,12 +1,14 @@
 import {useQuery} from '@tanstack/react-query';
 import {useSearchParams} from 'react-router-dom';
-import greenlightApi from '../../api/greenlightApi';
+import greenlightApi, {Rating} from '../../api/greenlightApi';
 import {getFilteredMediaEntities} from '../../helpers/utils';
 import {
   MediaType,
   REACT_QUERY_API_KEYS,
   MediaEntity,
   SearchParam,
+  RatingSourceSortParam,
+  RatingSource,
 } from '../../types/types';
 import {
   CLIENT_SORT_OPTIONS,
@@ -17,6 +19,9 @@ import ToWatchFooter from '../MediaCard/ToWatchFooter';
 import Box from '../Shared/Box/Box';
 
 import './MediaList.less';
+
+//TODO: [cam] Handle adding duplicates. You can currently add duplicates to
+//Watched by adding from the Search page and adding from the To Watch page
 
 const ToWatchList = (): JSX.Element => {
   const [searchParams] = useSearchParams();
@@ -38,6 +43,81 @@ const ToWatchList = (): JSX.Element => {
     retry: false,
   });
 
+  const convertRatingToFloat = (rating: string, ratingSource: RatingSource) => {
+    const converters = {
+      [RatingSource.ROTTEN_TOMATOES]: (value: string) => parseInt(value),
+      [RatingSource.IMDB]: (value: string) => +value.split('/')[0],
+    };
+
+    return converters[ratingSource as keyof typeof converters](rating);
+  };
+
+  //TODO: [cam] add default sort direction by sort param (i.e. desc for ratings)
+  function sortByRatings(array: MediaEntity[], ratingSource: RatingSource) {
+    return array.slice().sort((a: any, b: any) => {
+      // parse the ratings field from each object
+      const ratingsA = JSON.parse(a.ratings);
+      const ratingsB = JSON.parse(b.ratings);
+
+      const ratingA = ratingsA.find((r: Rating) => r.Source === ratingSource);
+      const ratingB = ratingsB.find((r: Rating) => r.Source === ratingSource);
+
+      if (!ratingA && !ratingB) {
+        return 0;
+      }
+
+      if (!ratingA) {
+        return -1;
+      }
+
+      if (!ratingB) {
+        return 1;
+      }
+
+      const ratingAInt = convertRatingToFloat(ratingA.Value, ratingSource);
+      const ratingBInt = convertRatingToFloat(ratingB.Value, ratingSource);
+
+      return ratingAInt - ratingBInt;
+    });
+  }
+
+  const getFilteredItems = (): MediaEntity[] => {
+    if (!fetchToWatchMedia.data) {
+      return [];
+    }
+
+    if (isClientSortOption) {
+      if (sortParam?.includes(RatingSourceSortParam.ROTTEN_TOMATOES)) {
+        if (sortParam.startsWith('-')) {
+          return sortByRatings(
+            fetchToWatchMedia.data,
+            RatingSource.ROTTEN_TOMATOES
+          ).reverse();
+        } else {
+          return sortByRatings(
+            fetchToWatchMedia.data,
+            RatingSource.ROTTEN_TOMATOES
+          );
+        }
+      }
+
+      if (sortParam?.includes(RatingSourceSortParam.IMDB)) {
+        if (sortParam.startsWith('-')) {
+          return sortByRatings(
+            fetchToWatchMedia.data,
+            RatingSource.IMDB
+          ).reverse();
+        } else {
+          return sortByRatings(fetchToWatchMedia.data, RatingSource.IMDB);
+        }
+      }
+    }
+
+    return getFilteredMediaEntities(fetchToWatchMedia.data, searchParams);
+  };
+
+  const filteredItems = getFilteredItems();
+
   const renderToWatchList = () => {
     if (fetchToWatchMedia.isInitialLoading) {
       return <h1>loading...</h1>;
@@ -51,17 +131,17 @@ const ToWatchList = (): JSX.Element => {
       return <h1>No movies found</h1>;
     }
 
-    const filteredItems = (): MediaEntity[] => {
-      if (!fetchToWatchMedia.data) {
-        return [];
-      }
+    if (!filteredItems.length) {
+      return <h1>No Items found.</h1>;
+    }
 
-      return getFilteredMediaEntities(fetchToWatchMedia.data, searchParams);
-    };
-
-    return filteredItems().map((item: MediaEntity) => {
+    return filteredItems.map((item: MediaEntity) => {
       return (
-        <MediaCard key={item.imdbID} item={item}>
+        <MediaCard
+          key={item.imdbID}
+          id={item.id}
+          title={item.title}
+          thumbnail={item.thumbnail}>
           <ToWatchFooter item={item} />
         </MediaCard>
       );

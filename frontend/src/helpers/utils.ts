@@ -4,9 +4,8 @@ export const convertGenresToArr = (str: string): string[] => {
   return [str];
 };
 
-//TODO: [cam]  why is this sometimes giving the previous day?
 export const getFormattedDate = (dateString: string) => {
-  const date = new Date(dateString);
+  const date = new Date(dateString.replaceAll('-', '/'));
   const month = date.toLocaleString('default', {month: 'short'});
   const day = date.getDate();
   const year = date.getFullYear();

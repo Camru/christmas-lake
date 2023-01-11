@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Box from '../Box/Box';
 import './Dropdown.less';
 
@@ -19,23 +19,28 @@ const SELECT_ITEM_CLASSNAME = 'dropdown-select-item';
 
 const Dropdown = ({options, onSelectChange, value}: DropdownProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-
-  //TODO: [cam] handle Click outside
-  // const handleClickOutside = (e: any) => {
-  //   setIsDropdownOpen(false);
-  // };
-
-  const handleKeyDown = (e: any) => {
-    if (e.key === 'Escape') {
-      setIsDropdownOpen(false);
-    }
-  };
+  const ref = useRef(null);
 
   useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+        return;
+      }
+    };
+
+    const handleKeyDown = (e: any) => {
+      if (e.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('click', handleClickOutside);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -69,13 +74,12 @@ const Dropdown = ({options, onSelectChange, value}: DropdownProps) => {
     return value === optionValue;
   });
 
-  //TODO: [cam] update styling for dropdown list and selected option
   return (
-    <div className="dropdown-container">
+    <div className="dropdown-container" ref={ref}>
       <button
         className="dropdown-button"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-        <Box justifyContent="space-between">
+        <Box justifyContent="space-between" alignItems="center">
           {selectedOption?.label}
           <svg
             width={17}

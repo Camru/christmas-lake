@@ -1,6 +1,6 @@
 .dropdown-select-icon {
 	z-index: 1;
-	color: #2000ff;
+	color: white;
 }
 
 .dropdown-container {
@@ -8,17 +8,24 @@
 	position: relative;
 
 	.dropdown-button {
+		background-color: var(--color-input-bg);
+		color: white;
 		padding: var(--input-padding);
+		padding-left: 10px;
 		width: var(--width);
 		cursor: pointer;
 		border: none;
 		border-radius: var(--border-radius);
+
+		&:hover {
+			opacity: 0.8;
+		}
 	}
 
 	.dropdown-list {
 		border-radius: var(--border-radius);
-		background-color: white;
-		color: black;
+		background-color: var(--color-input-bg);
+		color: white;
 		list-style: none;
 		margin: 0;
 		position: absolute;
@@ -35,12 +42,12 @@
 			padding: 5px 11px;
 
 			&.active {
-				color: var(--color-action);
-				font-weight: 700;
+				color: #fac000;
+				font-weight: 600;
 			}
 
 			&:hover {
-				background-color: var(--color-gray);
+				background-color: #00000021;
 				cursor: pointer;
 			}
 		}

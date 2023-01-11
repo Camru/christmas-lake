@@ -20,26 +20,50 @@
 
   &:disabled {
     cursor: not-allowed;
-    background-color: white;
-    color: var(--color-gray-1);
-    outline: 1px solid var(--color-gray-1);
+    opacity: 0.7;
   }
 }
 
 .icon-button {
+  position: relative;
   color: white;
   background-color: transparent;
   border-radius: 50%;
   border: none;
-  height: 30px;
-  width: 30px;
+  height: 25px;
+  width: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
   &:hover {
-
     background-color: #c5c5c521;
+  }
+
+  &.search-footer {
+    background-color: #c5c5c521;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &.added-to-watch {
+      background-color: var(--color-to-watch);
+
+      &:hover {
+        background-color: var(--color-to-watch);
+      }
+    }
+
+    &.added-watched {
+      background-color: var(--color-watched);
+
+      &:hover {
+        background-color: var(--color-watched);
+      }
+    }
+
+
   }
 }

@@ -16,8 +16,9 @@ const WatchedFields = ({
   dateChangeHandler,
 }: WatchedItemProps) => {
   return (
-    <Box flexDirection="column" gap={10} width="100%">
+    <Box flexDirection="column" gap={25} m="15px 0" width="100%">
       <input
+        className="date-picker-input"
         type="date"
         onChange={(e: any) => dateChangeHandler(e.target.value)}
         value={dateWatched}
@@ -34,13 +35,13 @@ const WatchedFields = ({
         />
         <div
           style={{
-            width: '30px',
             display: 'flex',
             alignItems: 'center',
+            width: '90px',
           }}>
           <Rating
             value={userRating}
-            source={RatingSource.ROTTEN_TOMATOES}
+            source={RatingSource.USER_RATING}
             type="float"
           />
         </div>

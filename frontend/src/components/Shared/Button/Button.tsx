@@ -1,5 +1,5 @@
 import React from 'react';
-import {ButtonColor} from '../../../types/types';
+import {Colors} from '../../../types/types';
 
 import './Button.less';
 
@@ -10,7 +10,7 @@ type ButtonProps = {
   onKeyDown?: (e?: any) => void;
   style?: {};
   type?: 'button' | 'submit' | 'reset' | undefined;
-  color?: ButtonColor;
+  color?: Colors;
 };
 
 const Button = ({
@@ -24,7 +24,7 @@ const Button = ({
       return '';
     }
 
-    return color ? color : ButtonColor.LIGHT;
+    return color ? color : Colors.LIGHT;
   };
 
   return (
