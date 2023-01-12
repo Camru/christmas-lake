@@ -54,27 +54,33 @@ const Search = () => {
     return data.map(renderFoundItems);
   };
 
-  const getIsAlreadyWatched = (imdbId: string) => {
+  const getWatchedMediaEntityId = (imdbId: string): string | undefined => {
     if (fetchWatchedMediaQuery.isLoading || !fetchWatchedMediaQuery.data) {
-      return false;
+      return undefined;
     }
 
-    return fetchWatchedMediaQuery.data.some(
+    const match = fetchWatchedMediaQuery.data?.find(
       ({imdbID: watchedImdbId, watched}) => {
-        return imdbId === watchedImdbId && watched;
+        return watchedImdbId === imdbId && watched;
       }
     );
+
+    return match?.id;
   };
 
   //TODO: [cam] allow reversing the action by removing it once you add it
-  const getIsAlreadyAddedToWatchList = (imdbId: string) => {
+  const getToWatchMediaEntityId = (imdbId: string): string | undefined => {
     if (fetchToWatchMedia.isLoading || !fetchToWatchMedia.data) {
-      return false;
+      return undefined;
     }
 
-    return fetchToWatchMedia.data.some(({imdbID: watchedImdbId, watched}) => {
-      return imdbId === watchedImdbId && !watched;
-    });
+    const match = fetchToWatchMedia.data.find(
+      ({imdbID: watchedImdbId, watched}) => {
+        return watchedImdbId === imdbId && !watched;
+      }
+    );
+
+    return match?.id;
   };
 
   //TODO: [cam]  add footer component that fetches the ratings
@@ -87,8 +93,8 @@ const Search = () => {
         thumbnail={item.Poster}>
         <SearchItemFooter
           item={item}
-          isAlreadyWatched={getIsAlreadyWatched(item.imdbID)}
-          isAlreadyAddedToWatchList={getIsAlreadyAddedToWatchList(item.imdbID)}
+          watchedMediaEntityId={getWatchedMediaEntityId(item.imdbID)}
+          toWatchMediaEntityId={getToWatchMediaEntityId(item.imdbID)}
         />
       </MediaCard>
     );

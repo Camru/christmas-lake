@@ -13,8 +13,8 @@ import AddWatchedButton from '../Shared/Button/AddWatchedButton';
 
 type SearchItemFooterProps = {
   item: SearchResult;
-  isAlreadyWatched: boolean;
-  isAlreadyAddedToWatchList: boolean;
+  watchedMediaEntityId: string | undefined;
+  toWatchMediaEntityId: string | undefined;
 };
 
 //TODO: [cam] consolidate this with ToWatchFooter
@@ -26,8 +26,8 @@ const RatingSourceToKeyMap: Record<string, RatingSource> = {
 
 const SearchItemFooter = ({
   item,
-  isAlreadyWatched,
-  isAlreadyAddedToWatchList,
+  watchedMediaEntityId,
+  toWatchMediaEntityId,
 }: SearchItemFooterProps) => {
   const searchedByIdQuery = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH_BY_ID, item.Title],
@@ -66,8 +66,8 @@ const SearchItemFooter = ({
           <AddToWatchButton
             className="search-footer"
             item={item}
-            isAlreadyAdded={isAlreadyAddedToWatchList}
-            isAlreadyWatched={isAlreadyWatched}
+            watchedMediaEntityId={watchedMediaEntityId}
+            toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton
             ratings={searchedByIdQuery.data?.Ratings || []}>
             <svg
@@ -87,8 +87,8 @@ const SearchItemFooter = ({
           <AddWatchedButton
             className="search-footer"
             item={item}
-            isAlreadyAdded={isAlreadyWatched}
-            isAlreadyAddedToWatchList={isAlreadyAddedToWatchList}
+            watchedMediaEntityId={watchedMediaEntityId}
+            toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton>
             <svg
               xmlns="http://www.w3.org/2000/svg"

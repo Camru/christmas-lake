@@ -17,8 +17,8 @@ import Tooltip from '../Tooltip/Tooltip';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
-  isAlreadyAdded: boolean;
-  isAlreadyWatched: boolean;
+  watchedMediaEntityId: string | undefined;
+  toWatchMediaEntityId: string | undefined;
   isIconButton: boolean;
   item: SearchResult;
   ratings: Rating[];
@@ -45,12 +45,11 @@ const convertToMediaEntity = (
 const AddToWatchButton = ({
   className,
   item,
-  isAlreadyAdded,
-  isAlreadyWatched,
+  watchedMediaEntityId,
+  toWatchMediaEntityId,
   ratings,
   children,
 }: AddToWatchButtonProps): JSX.Element => {
-  console.log('[cam] item', item);
   const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<Notifications>(
     Notifications.NONE
@@ -79,7 +78,7 @@ const AddToWatchButton = ({
   };
 
   const handleClick = () => {
-    if (isAlreadyAdded && createWatchedMediaMutation.data?.id) {
+    if (toWatchMediaEntityId && createWatchedMediaMutation.data?.id) {
       deleteMediaEntityMutation.mutate(createWatchedMediaMutation.data.id);
     } else {
       handleAddToWatchList();
@@ -103,15 +102,15 @@ const AddToWatchButton = ({
   };
 
   const renderTooltip = () => {
-    if (isAlreadyAdded && !createWatchedMediaMutation.data) {
+    if (toWatchMediaEntityId && !createWatchedMediaMutation.data) {
       return;
     }
 
-    if (isAlreadyWatched) {
+    if (watchedMediaEntityId) {
       return <Tooltip text="Already watched" />;
     }
 
-    const tooltipText = isAlreadyAdded
+    const tooltipText = toWatchMediaEntityId
       ? 'Remove from To Watch list'
       : 'Add to To Watch list';
 
@@ -128,13 +127,15 @@ const AddToWatchButton = ({
         </Notification>
       )}
       <IconButton
-        className={classNames(className, {'added-to-watch': isAlreadyAdded})}
+        className={classNames(className, {
+          'added-to-watch': !!toWatchMediaEntityId,
+        })}
         onPointerEnter={() => setIsTooltipOpen(true)}
         onPointerLeave={() => setIsTooltipOpen(false)}
         onClick={handleClick}
         disabled={
-          (isAlreadyAdded && !createWatchedMediaMutation.data) ||
-          isAlreadyWatched
+          (!!toWatchMediaEntityId && !createWatchedMediaMutation.data) ||
+          !!watchedMediaEntityId
         }>
         {children}
       </IconButton>

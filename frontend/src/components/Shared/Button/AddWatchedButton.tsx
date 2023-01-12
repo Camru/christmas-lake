@@ -21,8 +21,8 @@ import IconButton from './IconButton';
 
 type AddWatchedButtonProps = {
   children: React.ReactNode;
-  isAlreadyAdded: boolean;
-  isAlreadyAddedToWatchList: boolean;
+  watchedMediaEntityId: string | undefined;
+  toWatchMediaEntityId: string | undefined;
   isIconButton?: boolean;
   item: SearchResult;
   onSuccess?: () => void;
@@ -52,8 +52,8 @@ const convertToMediaEntity = (
 const AddWatchedButton = ({
   className,
   item,
-  isAlreadyAdded,
-  isAlreadyAddedToWatchList,
+  watchedMediaEntityId,
+  toWatchMediaEntityId,
   onSuccess,
   children,
 }: AddWatchedButtonProps): JSX.Element => {
@@ -67,18 +67,6 @@ const AddWatchedButton = ({
     Notifications.NONE
   );
   const queryClient = useQueryClient();
-
-  const createWatchedMediaMutation = useMutation({
-    mutationFn: greenlightApi.createWatchedMedia,
-    onSuccess: async () => {
-      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
-      setIsModalOpen(false);
-      setNotification(Notifications.ADDED);
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
-  });
 
   const deleteMediaEntityMutation = useMutation({
     mutationFn: greenlightApi.deleteMovie,
@@ -95,21 +83,28 @@ const AddWatchedButton = ({
     },
   });
 
-  const handleDeleteFromToWatchList = (mediaEntityId: string) => {
-    deleteFromToWatchListMutation.mutate(mediaEntityId);
-  };
+  const createWatchedMediaMutation = useMutation({
+    mutationFn: greenlightApi.createWatchedMedia,
+    onSuccess: async () => {
+      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.WATCHED]);
+      if (toWatchMediaEntityId) {
+        deleteFromToWatchListMutation.mutate(toWatchMediaEntityId);
+      }
+      setIsModalOpen(false);
+      setNotification(Notifications.ADDED);
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+  });
 
   const handleAddToWatchList = () => {
-    if (isAlreadyAddedToWatchList) {
-      
-    }
     const mediaEntity = convertToMediaEntity(
       item,
       dateWatched,
       Number(userRating)
     );
     createWatchedMediaMutation.mutate(mediaEntity);
-
   };
 
   const handleSelectDateWatched = (dateWatched: string) => {
@@ -125,7 +120,7 @@ const AddWatchedButton = ({
   };
 
   const handleClick = () => {
-    if (isAlreadyAdded && createWatchedMediaMutation.data?.id) {
+    if (watchedMediaEntityId && createWatchedMediaMutation.data?.id) {
       deleteMediaEntityMutation.mutate(createWatchedMediaMutation.data.id);
     } else {
       handleOpenModal();
@@ -149,11 +144,11 @@ const AddWatchedButton = ({
   };
 
   const renderTooltip = () => {
-    if (isAlreadyAdded && !createWatchedMediaMutation.data) {
+    if (watchedMediaEntityId && !createWatchedMediaMutation.data) {
       return;
     }
 
-    const tooltipText = isAlreadyAdded
+    const tooltipText = watchedMediaEntityId
       ? 'Remove from Watched list'
       : 'Add to Watched list';
 
@@ -204,11 +199,13 @@ const AddWatchedButton = ({
         </Notification>
       )}
       <IconButton
-        className={classNames(className, {'added-watched': isAlreadyAdded})}
+        className={classNames(className, {
+          'added-watched': !!watchedMediaEntityId,
+        })}
         onPointerEnter={() => setIsTooltipOpen(true)}
         onPointerLeave={() => setIsTooltipOpen(false)}
         onClick={handleClick}
-        disabled={isAlreadyAdded && !createWatchedMediaMutation.data}>
+        disabled={!!watchedMediaEntityId && !createWatchedMediaMutation.data}>
         {children}
       </IconButton>
       {isModalOpen && renderModal()}
