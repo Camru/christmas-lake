@@ -8,6 +8,7 @@ export type MediaEntity = {
   id: string;
   title: string;
   dateWatched: string;
+  dateWatchedSeasons: string[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;

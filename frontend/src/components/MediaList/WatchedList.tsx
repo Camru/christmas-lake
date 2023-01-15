@@ -22,6 +22,8 @@ import WatchedFields from '../Shared/WatchedFields';
 
 import './MediaList.less';
 import Notification from '../Shared/Notification/Notification';
+import Badge from '../Shared/Badge/Badge';
+import {BeakerIcon} from '@heroicons/react/24/solid';
 
 const WatchedList = (): JSX.Element => {
   const queryClient = useQueryClient();
@@ -29,6 +31,7 @@ const WatchedList = (): JSX.Element => {
   const [isDeleteItemModalOpen, setIsDeleteItemModalOpen] =
     useState<boolean>(false);
   const [dateWatched, setDateWatched] = useState<string>('');
+  const [dateWatchedSeasons, setDateWatchedSeasons] = useState<string[]>([]);
   const [userRating, setUserRating] = useState<string>('');
   const [notification, setNotification] = useState<Notifications>(
     Notifications.NONE
@@ -64,6 +67,8 @@ const WatchedList = (): JSX.Element => {
   });
 
   const handleCloseEditModal = () => {
+    setDateWatched('');
+    setDateWatchedSeasons([]);
     setEditModalId('');
   };
 
@@ -71,9 +76,16 @@ const WatchedList = (): JSX.Element => {
     deleteMediaEntityMutation.mutate(mediaEntityId);
   };
 
+  //TODO: [cam]  consider updating dateWatched to the date of the last season
+  //watched
   const handleUpdateMediaEntity = (mediaEntity: MediaEntity) => {
     const params: UpdateWatchedMediaParams = {
-      dateWatched: dateWatched ? dateWatched : mediaEntity.dateWatched,
+      dateWatched: dateWatched
+        ? dateWatched
+        : dateWatchedSeasons[dateWatchedSeasons.length - 1],
+      dateWatchedSeasons: dateWatchedSeasons.length
+        ? dateWatchedSeasons
+        : mediaEntity.dateWatchedSeasons,
       rating: userRating ? Number(userRating) : mediaEntity.rating,
     };
     updateMediaEntityMutation.mutate({mediaEntityId: mediaEntity.id, params});
@@ -117,6 +129,20 @@ const WatchedList = (): JSX.Element => {
       setDateWatched(dateWatched);
     };
 
+    const handleSelectDateWatchedSeason = (
+      dateWatched: string | null,
+      seasonNumber: number
+    ) => {
+      if (dateWatched === null) {
+        setDateWatchedSeasons(dateWatchedSeasons.slice(0, -1));
+      } else {
+        setDateWatchedSeasons((prevDateWatchedSeasons) => {
+          prevDateWatchedSeasons[seasonNumber] = dateWatched;
+          return [...prevDateWatchedSeasons];
+        });
+      }
+    };
+
     const handleChangeRating = (userRating: string) => {
       setUserRating(userRating);
     };
@@ -140,16 +166,22 @@ const WatchedList = (): JSX.Element => {
       );
     };
 
-    //TODO: [cam] add tooltip comp
-
+    //TODO: [cam]  maybe try a map?
     const renderEditModal = (item: MediaEntity) => {
       return (
         <Modal title={item.title} onClose={handleCloseEditModal}>
           <Box flexDirection="column" gap={20}>
             <WatchedFields
+              isSeries={item.mediaType === MediaType.SERIES}
+              dateWatchedSeasons={
+                dateWatchedSeasons.length
+                  ? dateWatchedSeasons
+                  : item.dateWatchedSeasons
+              }
               userRating={userRating ? userRating : item.rating.toString()}
               dateWatched={dateWatched ? dateWatched : item.dateWatched}
               dateChangeHandler={handleSelectDateWatched}
+              seasonDateChangeHandler={handleSelectDateWatchedSeason}
               ratingChangeHandler={handleChangeRating}
             />
             <Box gap={10} justifyContent="end">
@@ -174,7 +206,12 @@ const WatchedList = (): JSX.Element => {
               <Button
                 onClick={() => handleUpdateMediaEntity(item)}
                 color={Colors.ACTION}
-                disabled={!userRating && !dateWatched}>
+                disabled={
+                  !userRating &&
+                  !dateWatched &&
+                  !dateWatchedSeasons.length &&
+                  item.mediaType === MediaType.SERIES
+                }>
                 <svg
                   width={15}
                   xmlns="http://www.w3.org/2000/svg"
@@ -213,7 +250,12 @@ const WatchedList = (): JSX.Element => {
           <Box justifyContent="space-between" alignItems="center" width="100%">
             {editModalId === item.id && renderEditModal(item)}
             {isDeleteItemModalOpen && renderDeleteModal()}
-            {item.watched && getFormattedDate(item.dateWatched)}
+            <Box gap={5} alignItems="center">
+              {item.watched && getFormattedDate(item.dateWatched)}
+              {item.mediaType === MediaType.SERIES && (
+                <Badge number={item.dateWatchedSeasons.length} />
+              )}
+            </Box>
             <Rating
               value={item.rating.toString()}
               source={RatingSource.USER_RATING}
@@ -222,6 +264,8 @@ const WatchedList = (): JSX.Element => {
 
             <IconButton onClick={() => handleOpenEditModal(item.id)}>
               <svg
+                width="30px"
+                height="30px"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

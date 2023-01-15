@@ -7,6 +7,7 @@ import greenlightApi, {
 import {getCurrentDateInputValue} from '../../../helpers/utils';
 import {
   Colors,
+  MediaType,
   Notifications,
   REACT_QUERY_API_KEYS,
   SearchResult,
@@ -14,7 +15,7 @@ import {
 import Box from '../Box/Box';
 import Modal from '../Modal/Modal';
 import Notification from '../Notification/Notification';
-import Tooltip from '../Tooltip/Tooltip';
+import {TooltipPosition} from '../Tooltip/Tooltip';
 import WatchedFields from '../WatchedFields';
 import Button from './Button';
 import IconButton from './IconButton';
@@ -36,9 +37,25 @@ const convertToMediaEntity = (
   dateWatched: string,
   rating: number
 ): CreateWatchedMediaParams => {
+  if (item.Type === MediaType.SERIES) {
+    return {
+      title: item.Title,
+      dateWatched: dateWatched,
+      dateWatchedSeasons: [dateWatched],
+      year: item.Year,
+      mediaType: item.Type,
+      thumbnail: item.Poster,
+      imdbID: item.imdbID,
+      rating,
+      ratings: '',
+      watched: true,
+    };
+  }
+
   return {
     title: item.Title,
-    dateWatched: dateWatched,
+    dateWatched,
+    dateWatchedSeasons: [],
     year: item.Year,
     mediaType: item.Type,
     thumbnail: item.Poster,
@@ -58,7 +75,6 @@ const AddWatchedButton = ({
   children,
 }: AddWatchedButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
   const [dateWatched, setDateWatched] = useState<string>(
     getCurrentDateInputValue()
   );
@@ -143,16 +159,14 @@ const AddWatchedButton = ({
     }[notification];
   };
 
-  const renderTooltip = () => {
+  const getTooltipText = () => {
     if (watchedMediaEntityId && !createWatchedMediaMutation.data) {
-      return;
+      return '';
     }
 
-    const tooltipText = watchedMediaEntityId
+    return watchedMediaEntityId
       ? 'Remove from Watched list'
       : 'Add to Watched list';
-
-    return <Tooltip text={tooltipText} />;
   };
 
   const renderModal = () => {
@@ -199,17 +213,15 @@ const AddWatchedButton = ({
         </Notification>
       )}
       <IconButton
+        tooltip={{text: getTooltipText(), position: TooltipPosition.LEFT}}
         className={classNames(className, {
           'added-watched': !!watchedMediaEntityId,
         })}
-        onPointerEnter={() => setIsTooltipOpen(true)}
-        onPointerLeave={() => setIsTooltipOpen(false)}
         onClick={handleClick}
         disabled={!!watchedMediaEntityId && !createWatchedMediaMutation.data}>
         {children}
       </IconButton>
       {isModalOpen && renderModal()}
-      {isTooltipOpen && renderTooltip()}
     </div>
   );
 };

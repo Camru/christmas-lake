@@ -13,7 +13,7 @@ import {
 } from '../../../types/types';
 import IconButton from './IconButton';
 import Notification from '../Notification/Notification';
-import Tooltip from '../Tooltip/Tooltip';
+import Tooltip, {TooltipPosition} from '../Tooltip/Tooltip';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
@@ -32,6 +32,7 @@ const convertToMediaEntity = (
   return {
     title: item.Title,
     dateWatched: new Date().toDateString(),
+    dateWatchedSeasons: [],
     year: item.Year,
     mediaType: item.Type,
     thumbnail: item.Poster,
@@ -101,20 +102,18 @@ const AddToWatchButton = ({
     }[notification];
   };
 
-  const renderTooltip = () => {
+  const getTooltipText = () => {
     if (toWatchMediaEntityId && !createWatchedMediaMutation.data) {
-      return;
+      return '';
     }
 
     if (watchedMediaEntityId) {
-      return <Tooltip text="Already watched" />;
+      return 'Already watched';
     }
 
-    const tooltipText = toWatchMediaEntityId
+    return toWatchMediaEntityId
       ? 'Remove from To Watch list'
       : 'Add to To Watch list';
-
-    return <Tooltip text={tooltipText} />;
   };
 
   return (
@@ -127,11 +126,10 @@ const AddToWatchButton = ({
         </Notification>
       )}
       <IconButton
+        tooltip={{text: getTooltipText(), position: TooltipPosition.LEFT}}
         className={classNames(className, {
           'added-to-watch': !!toWatchMediaEntityId,
         })}
-        onPointerEnter={() => setIsTooltipOpen(true)}
-        onPointerLeave={() => setIsTooltipOpen(false)}
         onClick={handleClick}
         disabled={
           (!!toWatchMediaEntityId && !createWatchedMediaMutation.data) ||
@@ -139,7 +137,6 @@ const AddToWatchButton = ({
         }>
         {children}
       </IconButton>
-      {isTooltipOpen && renderTooltip()}
     </div>
   );
 };

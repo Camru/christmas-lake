@@ -2,7 +2,7 @@ import axios from 'axios';
 import {MediaType, MediaEntity} from '../types/types';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:4000/v1/',
+  baseURL: 'http://192.168.0.135:4000/v1/',
 });
 
 export type Rating = {
@@ -13,6 +13,7 @@ export type Rating = {
 export type CreateWatchedMediaParams = {
   title: string;
   dateWatched: string;
+  dateWatchedSeasons: string[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;
@@ -24,6 +25,7 @@ export type CreateWatchedMediaParams = {
 
 export type UpdateWatchedMediaParams = {
   dateWatched: string;
+  dateWatchedSeasons: string[];
   rating: number;
 };
 
