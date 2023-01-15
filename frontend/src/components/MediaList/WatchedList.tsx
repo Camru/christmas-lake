@@ -206,7 +206,7 @@ const WatchedList = (): JSX.Element => {
     return filteredItems.map((item: MediaEntity) => {
       return (
         <MediaCard
-          key={item.imdbID + item.dateWatched}
+          key={item.id}
           id={item.id}
           title={item.title}
           thumbnail={item.thumbnail}>

@@ -5,6 +5,7 @@ import omdbApi from '../../api/omdbApi';
 import {
   capitalizeFirstChar,
   convertMinutesToHoursAndMinutes,
+  getFormattedDate,
 } from '../../helpers/utils';
 import {
   Colors,
@@ -65,7 +66,13 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       return <p>loading extra details...</p>;
     }
 
+    console.log('[cam] item.dateWatched', item.dateWatched);
+
     const details = [
+      {
+        label: 'Date Added',
+        value: getFormattedDate(item.dateWatched),
+      },
       {
         label: 'Year',
         value: data?.Year,
@@ -219,7 +226,6 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       <Box width="100%" gap={5}>
         <AddWatchedButton
           item={searchResult}
-          isAlreadyAdded={false}
           isIconButton
           onSuccess={() => handleDeleteMovie(item.id.toString())}>
           <svg

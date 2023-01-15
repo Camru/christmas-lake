@@ -27,14 +27,16 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	// a subset of the Movie struct that we created earlier). This struct will
 	// be our *target decode destination*.
 	var input struct {
-		Title       string `json:"title"`
-		DateWatched string `json:"dateWatched"`
-		Year        string `json:"year,omitempty"`
-		MediaType   string `json:"mediaType"`
-		Thumbnail   string `json:"thumbnail"`
-		ImdbID      string `json:"imdbID"`
-		Rating      string `json:"rating"`
-		Watched     bool   `json:"watched"`
+		Title              string   `json:"title"`
+		DateWatched        string   `json:"dateWatched"`
+		DateWatchedSeasons []string `json:"dateWatchedSeasons"`
+		Year               string   `json:"year,omitempty"`
+		MediaType          string   `json:"mediaType"`
+		Thumbnail          string   `json:"thumbnail"`
+		ImdbID             string   `json:"imdbID"`
+		Rating             float32  `json:"rating"`
+		Ratings            string   `json:"ratings"`
+		Watched            bool     `json:"watched"`
 	}
 
 	// Initialize a new json.Decoder instance which reads from the request body,
@@ -52,14 +54,16 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	// Copy the values from the input struct to a new Movie struct.
 	movie := &data.Movie{
-		Title:       input.Title,
-		DateWatched: input.DateWatched,
-		Year:        input.Year,
-		MediaType:   input.MediaType,
-		Thumbnail:   input.Thumbnail,
-		ImdbID:      input.ImdbID,
-		Rating:      input.Rating,
-		Watched:     input.Watched,
+		Title:              input.Title,
+		DateWatched:        input.DateWatched,
+		DateWatchedSeasons: input.DateWatchedSeasons,
+		Year:               input.Year,
+		MediaType:          input.MediaType,
+		Thumbnail:          input.Thumbnail,
+		ImdbID:             input.ImdbID,
+		Rating:             input.Rating,
+		Ratings:            input.Ratings,
+		Watched:            input.Watched,
 	}
 
 	// Initialize a new Validator instance.
@@ -132,87 +136,90 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // PUT
-// func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Request) {
-// 	// Extract the movie ID from the URL.
-// 	id, err := app.readIdParam(r)
-// 	if err != nil {
-// 		app.notFoundResponse(w, r)
-// 		return
-// 	}
+func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Request) {
+	// Extract the movie ID from the URL.
+	id, err := app.readIdParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
 
-// 	// Fetch the existing movie record from the database, sending a 404 Not
-// 	// Found response to the client if we couldn't find a matching record.
-// 	movie, err := app.models.Movies.Get(id)
-// 	if err != nil {
-// 		switch {
-// 		case errors.Is(err, data.ErrRecordNotFound):
-// 			app.notFoundResponse(w, r)
-// 		default:
-// 			app.serverErrorResponse(w, r, err)
-// 		}
-// 		return
-// 	}
+	// Fetch the existing movie record from the database, sending a 404 Not
+	// Found response to the client if we couldn't find a matching record.
+	movie, err := app.models.Movies.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			fmt.Println('1')
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
 
-// 	// Declare an input struct to hold the expected data from the client.
-// 	var input struct {
-// 		Title *string `json:"title"`
-// 		Year  *string `json:"year"`
-// 	}
+	// Declare an input struct to hold the expected data from the client.
+	var input struct {
+		DateWatched        *string   `json:"dateWatched"`
+		DateWatchedSeasons *[]string `json:"dateWatchedSeasons"`
+		Rating             *float32  `json:"rating"`
+	}
 
-// 	// Read the JSON request body data into the input struct.
-// 	err = app.readJSON(w, r, &input)
-// 	if err != nil {
-// 		app.badRequestResponse(w, r, err)
-// 		return
-// 	}
+	// Read the JSON request body data into the input struct.
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
 
-// 	// If the input.Title value is nil then we know that no corresponding
-// 	// "title" key/ value pair was provided in the JSON request body. So we move
-// 	// on and leave the movie record unchanged. Otherwise, we update the movie
-// 	// record with the new title value. Importantly, because input.Title is a
-// 	// now a pointer to a string, we need to dereference the pointer using the *
-// 	// operator to get the underlying value
-// 	if input.Title != nil {
-// 		movie.Title = *input.Title
-// 	}
-// 	if input.Year != nil {
-// 		movie.Year = *input.Year
-// 	}
+	// If the input.Title value is nil then we know that no corresponding
+	// "title" key/ value pair was provided in the JSON request body. So we move
+	// on and leave the movie record unchanged. Otherwise, we update the movie
+	// record with the new title value. Importantly, because input.Title is a
+	// now a pointer to a string, we need to dereference the pointer using the *
+	// operator to get the underlying value
+	if input.DateWatched != nil {
+		movie.DateWatched = *input.DateWatched
+	}
+	if input.Rating != nil {
+		movie.Rating = *input.Rating
+	}
+	if input.DateWatchedSeasons != nil {
+		movie.DateWatchedSeasons = *input.DateWatchedSeasons
+	}
 
-// 	// if input.Runtime != nil {
-// 	// 	movie.Runtime = *input.Runtime
-// 	// }
+	// if input.Genres != nil {
+	// 	movie.Genres = input.Genres // no need to dereference a slice
+	// }
 
-// 	// if input.Genres != nil {
-// 	// 	movie.Genres = input.Genres // no need to dereference a slice
-// 	// }
+	// Validate the updated movie record, sending the client a 422 Unprocessable
+	// Entity response if any checks fail.
+	v := validator.New()
 
-// 	// Validate the updated movie record, sending the client a 422 Unprocessable
-// 	// Entity response if any checks fail.
-// 	v := validator.New()
+	if data.ValidateMovie(v, movie); !v.Valid() {
+		app.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
 
-// 	if data.ValidateMovie(v, movie); !v.Valid() {
-// 		app.FailedValidationResponse(w, r, v.Errors)
-// 		return
-// 	}
+	err = app.models.Movies.Update(movie)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
 
-// 	err = app.models.Movies.Update(movie)
-// 	if err != nil {
-// 		switch {
-// 		case errors.Is(err, data.ErrEditConflict):
-// 			app.editConflictResponse(w, r)
+		default:
+			fmt.Println('2')
+			app.serverErrorResponse(w, r, err)
+		}
+	}
 
-// 		default:
-// 			app.serverErrorResponse(w, r, err)
-// 		}
-// 	}
-
-// 	// Write the updated movie record in a JSON response.
-// 	app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
-// 	if err != nil {
-// 		app.serverErrorResponse(w, r, err)
-// 	}
-// }
+	// Write the updated movie record in a JSON response.
+	app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
+	if err != nil {
+		fmt.Println('3')
+		app.serverErrorResponse(w, r, err)
+	}
+}
 
 func (app *application) deleteMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIdParam(r)
@@ -242,7 +249,8 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 	// To keep things consistent with our other handlers, we'll define an input
 	// struct to hold the expected values from the request query string.
 	var input struct {
-		Watched string
+		Watched   string
+		MediaType string
 		data.Filters
 	}
 
@@ -252,10 +260,8 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 	// data from the request.
 	qs := r.URL.Query()
 
-	// Use our helpers to extract the title and genres query string values,
-	// falling back to defaults of an empty string and an empty slice
-	// respectively if they are not provided by the client.
 	input.Watched = app.readString(qs, "watched", "")
+	input.MediaType = app.readString(qs, "mediaType", "")
 
 	// Get the page and page_size query string values as integers. Notice that
 	// we set the default page value to 1 and default page_size to 20, and that
@@ -265,12 +271,14 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 
 	input.Filters.Sort = app.readString(qs, "sort", "id")
 
+	input.Filters.SortSafelist = []string{"id", "title", "year", "dateWatched", "rating", "-id", "-title", "-year", "-dateWatched", "-rating"}
+
 	if !v.Valid() {
 		app.FailedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	movies, err := app.models.Movies.GetAll(input.Watched, input.Filters)
+	movies, err := app.models.Movies.GetAll(input.Watched, input.MediaType, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

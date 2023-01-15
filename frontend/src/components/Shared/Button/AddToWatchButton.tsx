@@ -31,7 +31,7 @@ const convertToMediaEntity = (
 ): CreateWatchedMediaParams => {
   return {
     title: item.Title,
-    dateWatched: new Date().toISOString(),
+    dateWatched: new Date().toDateString(),
     year: item.Year,
     mediaType: item.Type,
     thumbnail: item.Poster,

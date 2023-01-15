@@ -21,8 +21,8 @@ import IconButton from './IconButton';
 
 type AddWatchedButtonProps = {
   children: React.ReactNode;
-  watchedMediaEntityId: string | undefined;
-  toWatchMediaEntityId: string | undefined;
+  watchedMediaEntityId?: string | undefined;
+  toWatchMediaEntityId?: string | undefined;
   isIconButton?: boolean;
   item: SearchResult;
   onSuccess?: () => void;

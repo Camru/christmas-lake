@@ -4,25 +4,29 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/camru/greenlight/internal/validator"
+	"github.com/lib/pq"
 )
 
 // Annotate the Movie struct with struct tags to control how the keys appear in
 // the JSON-encoded output.
 
 type Movie struct {
-	ID          int64  `json:"id"`
-	Title       string `json:"title"`
-	DateWatched string `json:"dateWatched"`
-	Year        string `json:"year,omitempty"`
-	MediaType   string `json:"mediaType"`
-	Thumbnail   string `json:"thumbnail"`
-	ImdbID      string `json:"imdbID"`
-	Rating      string `json:"rating"`
-	Watched     bool   `json:"watched"`
-	Version     int32  `json:"version"`
+	ID                 int64    `json:"id"`
+	Title              string   `json:"title"`
+	DateWatched        string   `json:"dateWatched"`
+	DateWatchedSeasons []string `json:"dateWatchedSeasons"`
+	Year               string   `json:"year,omitempty"`
+	MediaType          string   `json:"mediaType"`
+	Thumbnail          string   `json:"thumbnail"`
+	ImdbID             string   `json:"imdbID"`
+	Rating             float32  `json:"rating"`
+	Ratings            string   `json:"ratings"`
+	Watched            bool     `json:"watched"`
+	Version            int32    `json:"version"`
 }
 
 func ValidateMovie(v *validator.Validator, movie *Movie) {
@@ -52,8 +56,8 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// Define the SQL query for inserting a new record in the movies table and
 	// returning the system-generated data.
 	query := `
-	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, dateWatchedSeasons)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	RETURNING id, version, imdbID`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -63,7 +67,7 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// from the movie struct. Declaring this slice immediately next to our SQL
 	// query helps to make it nice and clear *what values are being used where*
 	// in the query.
-	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating, movie.Watched}
+	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating, movie.Ratings, movie.Watched, pq.Array(movie.DateWatchedSeasons)}
 
 	// Use the QueryRow() method to execute the SQL query on our connection
 	// pool, passing in the args slice as a variadic parameter and scanning the
@@ -73,16 +77,6 @@ func (m MovieModel) Insert(movie *Movie) error {
 
 	return nil
 }
-
-// ID          int64  `json:"id"`
-// Title       string `json:"title"`
-// DateWatched string `json:"dateWatched"`
-// Year        string `json:"year,omitempty"`
-// MediaType   string `json:"mediaType"`
-// Thumbnail   string `json:"thumbnail"`
-// ImdbID      string `json:"imdbID"`
-// Rating      string `json:"rating"`
-// Version     int32  `json:"version"`
 
 func (m MovieModel) Get(id int64) (*Movie, error) {
 	// The PostgreSQL bigserial type that we're using for the movie ID starts
@@ -94,7 +88,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	}
 
 	// Define the SQL query for retrieving the movie data.
-	query := `SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched, version
+	query := `SELECT id, title, dateWatched, dateWatchedSeasons, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version
 	FROM media 
 	WHERE id = $1`
 
@@ -115,11 +109,13 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 		&movie.ID,
 		&movie.Title,
 		&movie.DateWatched,
+		pq.Array(&movie.DateWatchedSeasons),
 		&movie.Year,
 		&movie.MediaType,
 		&movie.Thumbnail,
 		&movie.ImdbID,
 		&movie.Rating,
+		&movie.Ratings,
 		&movie.Watched,
 		&movie.Version,
 	)
@@ -139,45 +135,44 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	return &movie, nil
 }
 
-// func (m MovieModel) Update(movie *Movie) error {
-// 	// Declare the SQL query for updating the record and returning the new
-// 	// version number.
-// 	query := `
-// 	UPDATE media
-// 	SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
-// 	WHERE id = $5 AND version = $6
-// 	RETURNING version`
+func (m MovieModel) Update(movie *Movie) error {
+	// Declare the SQL query for updating the record and returning the new
+	// version number.
+	query := `
+	UPDATE media
+	SET dateWatched = $1, dateWatchedSeasons = $2, rating = $3, version = version + 1
+	WHERE id = $4 AND version = $5
+	RETURNING version`
 
-// 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-// 	defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-// 	// Create an args slice containing the values for the placeholder
-// 	// parameters.
-// 	args := []any{
-// 		movie.Title,
-// 		movie.Year,
-// 		movie.Runtime,
-// 		pq.Array(movie.Genres),
-// 		movie.ID,
-// 		movie.Version,
-// 	}
+	// Create an args slice containing the values for the placeholder
+	// parameters.
+	args := []any{
+		movie.DateWatched,
+		pq.Array(movie.DateWatchedSeasons),
+		movie.Rating,
+		movie.ID,
+		movie.Version,
+	}
 
-// 	// Execute the SQL query. If no matching row could be found, we know the
-// 	// movie version has changed (or the record has been deleted) and we return
-// 	// our custom ErrEditConflict error.
-// 	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
-// 	if err != nil {
-// 		switch {
-// 		case errors.Is(err, sql.ErrNoRows):
-// 			return ErrEditConflict
+	// Execute the SQL query. If no matching row could be found, we know the
+	// movie version has changed (or the record has been deleted) and we return
+	// our custom ErrEditConflict error.
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
 
-// 		default:
-// 			return err
-// 		}
-// 	}
+		default:
+			return err
+		}
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func (m MovieModel) Delete(id int64) error {
 	if id < 1 {
@@ -213,19 +208,14 @@ func (m MovieModel) Delete(id int64) error {
 // Create a new GetAll() method which returns a slice of movies. Although we're not
 // using them right now, we've set this up to accept the various filter parameters as
 // arguments.
-func (m MovieModel) GetAll(watched string, filters Filters) ([]*Movie, error) {
+func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([]*Movie, error) {
 	// Construct the SQL query to retrieve all movie records.
-	query := `
-		SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, watched, version
-        FROM media 
-		WHERE watched = (
-			CASE 
-				WHEN $1 = 'true' THEN true 
-				WHEN $1 = 'false' THEN false 
-				ELSE false
-			END
-		) OR $1 = ''
-        ORDER BY id`
+	query := fmt.Sprintf(`
+	SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version, dateWatchedSeasons
+	FROM media
+	WHERE (watched = true AND $1 = 'true' OR watched = false AND $1 = 'false' OR $1 = '')
+	AND (mediaType = $2 OR $2 = '')
+	ORDER BY %s %s, id ASC`, filters.sortColumn(), filters.sortDirection())
 
 	// Create a context with a 3-second timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -233,7 +223,7 @@ func (m MovieModel) GetAll(watched string, filters Filters) ([]*Movie, error) {
 
 	// Use QueryContext() to execute the query. This returns a sql.Rows resultset
 	// containing the result.
-	rows, err := m.DB.QueryContext(ctx, query, watched)
+	rows, err := m.DB.QueryContext(ctx, query, watched, mediaType)
 	if err != nil {
 		return nil, err
 	}
@@ -261,8 +251,10 @@ func (m MovieModel) GetAll(watched string, filters Filters) ([]*Movie, error) {
 			&movie.Thumbnail,
 			&movie.ImdbID,
 			&movie.Rating,
+			&movie.Ratings,
 			&movie.Watched,
 			&movie.Version,
+			pq.Array(&movie.DateWatchedSeasons),
 		)
 		if err != nil {
 			return nil, err

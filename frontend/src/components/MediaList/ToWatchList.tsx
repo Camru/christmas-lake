@@ -55,7 +55,6 @@ const ToWatchList = (): JSX.Element => {
   //TODO: [cam] add default sort direction by sort param (i.e. desc for ratings)
   function sortByRatings(array: MediaEntity[], ratingSource: RatingSource) {
     return array.slice().sort((a: any, b: any) => {
-      // parse the ratings field from each object
       const ratingsA = JSON.parse(a.ratings);
       const ratingsB = JSON.parse(b.ratings);
 
@@ -138,7 +137,7 @@ const ToWatchList = (): JSX.Element => {
     return filteredItems.map((item: MediaEntity) => {
       return (
         <MediaCard
-          key={item.imdbID}
+          key={item.id}
           id={item.id}
           title={item.title}
           thumbnail={item.thumbnail}>
