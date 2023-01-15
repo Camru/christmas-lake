@@ -10,6 +10,7 @@ import AddToWatchButton from '../Shared/Button/AddToWatchButton';
 import Box from '../Shared/Box/Box';
 import Rating from '../Shared/Rating/Rating';
 import AddWatchedButton from '../Shared/Button/AddWatchedButton';
+import {PlusIcon, CheckIcon} from '@heroicons/react/24/outline';
 
 type SearchItemFooterProps = {
   item: SearchResult;
@@ -70,19 +71,7 @@ const SearchItemFooter = ({
             toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton
             ratings={searchedByIdQuery.data?.Ratings || []}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-              className="w-6 h-6">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
+            <PlusIcon className="button-icon" strokeWidth={2.5} />
           </AddToWatchButton>
           <AddWatchedButton
             className="search-footer"
@@ -90,19 +79,7 @@ const SearchItemFooter = ({
             watchedMediaEntityId={watchedMediaEntityId}
             toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-              className="w-6 h-6">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.5 12.75l6 6 9-13.5"
-              />
-            </svg>
+            <CheckIcon className="button-icon" strokeWidth={2.5} />
           </AddWatchedButton>
         </Box>
         <div style={{textTransform: 'capitalize'}}>{item.Type}</div>

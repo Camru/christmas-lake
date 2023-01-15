@@ -1,3 +1,8 @@
+import {
+  ArrowDownCircleIcon,
+  ArrowUpCircleIcon,
+} from '@heroicons/react/24/outline';
+import {MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/solid';
 import {useEffect, useState} from 'react';
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {
@@ -152,35 +157,9 @@ const ActionBar = () => {
 
     const SortIcon = (props: any) => {
       return isSortedDesc ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6 sort-icon"
-          {...props}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        <ArrowDownCircleIcon className="sort-icon" {...props} />
       ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6 sort-icon"
-          {...props}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        <ArrowUpCircleIcon className="sort-icon" {...props} />
       );
     };
 
@@ -228,37 +207,18 @@ const ActionBar = () => {
           {searchText.length !== 0 ? (
             <IconButton
               onClick={() => updateSearchParam('')}
-              color={Colors.LIGHT}>
-              <svg
-                width="15px"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              color={Colors.LIGHT}
+              style={{
+                position: 'absolute',
+                right: 0,
+              }}>
+              <XMarkIcon className="button-icon" />
             </IconButton>
           ) : (
-            <svg
-              width="13px"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 action-bar-search-icon">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
+            <MagnifyingGlassIcon
+              className="search-input-icon"
+              style={{width: 15}}
+            />
           )}
         </Box>
       )}

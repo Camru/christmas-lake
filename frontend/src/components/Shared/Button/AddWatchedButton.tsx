@@ -1,3 +1,4 @@
+import {PlusIcon} from '@heroicons/react/24/solid';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import classNames from 'classnames';
 import {useState} from 'react';
@@ -181,20 +182,7 @@ const AddWatchedButton = ({
           />
           <Button onClick={handleAddToWatchList} color={Colors.WATCHED}>
             <Box gap={5}>
-              <svg
-                width="17px"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
+              <PlusIcon width={17} />
               Add
             </Box>
           </Button>
