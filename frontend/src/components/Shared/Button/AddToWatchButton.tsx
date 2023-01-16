@@ -1,6 +1,6 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
-import {useState} from 'react';
+import { useState } from 'react';
 import greenlightApi, {
   CreateWatchedMediaParams,
   Rating,
@@ -13,7 +13,7 @@ import {
 } from '../../../types/types';
 import IconButton from './IconButton';
 import Notification from '../Notification/Notification';
-import Tooltip, {TooltipPosition} from '../Tooltip/Tooltip';
+import { TooltipPosition } from '../Tooltip/Tooltip';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
@@ -33,6 +33,7 @@ const convertToMediaEntity = (
     title: item.Title,
     dateWatched: new Date().toDateString(),
     dateWatchedSeasons: [],
+    tags: [],
     year: item.Year,
     mediaType: item.Type,
     thumbnail: item.Poster,
@@ -51,7 +52,6 @@ const AddToWatchButton = ({
   ratings,
   children,
 }: AddToWatchButtonProps): JSX.Element => {
-  const [isTooltipOpen, setIsTooltipOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<Notifications>(
     Notifications.NONE
   );

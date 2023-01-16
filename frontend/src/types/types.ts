@@ -9,6 +9,7 @@ export type MediaEntity = {
   title: string;
   dateWatched: string;
   dateWatchedSeasons: string[];
+  tags: string[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;
@@ -118,10 +119,17 @@ export enum SearchParam {
   MEDIA_TYPE = 'mediaType',
   SEARCH = 'search',
   SORT = 'sort',
+  FILTER = 'filter',
 }
 
 export enum Notifications {
   ADDED = 'ADDED',
   REMOVED = 'REMOVED',
   NONE = 'NONE',
+}
+
+export enum Tags {
+  ALL = 'all',
+  CHRISTMAS = 'christmas',
+  HALLOWEEN = 'halloween',
 }

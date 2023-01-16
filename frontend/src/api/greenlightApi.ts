@@ -14,6 +14,7 @@ export type CreateWatchedMediaParams = {
   title: string;
   dateWatched: string;
   dateWatchedSeasons: string[];
+  tags: string[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;
@@ -26,6 +27,7 @@ export type CreateWatchedMediaParams = {
 export type UpdateWatchedMediaParams = {
   dateWatched: string;
   dateWatchedSeasons: string[];
+  tags: string[];
   rating: number;
 };
 

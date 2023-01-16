@@ -10,6 +10,7 @@ import {
   MediaType,
   SearchParam,
   Tab,
+  Tags,
   URL_PATHS,
 } from '../../types/types';
 import Box from '../Shared/Box/Box';
@@ -58,14 +59,22 @@ const getSortOptions = (pathname: string): Option[] => {
   return DEFAULT_SORT_OPTIONS;
 };
 
+const FILTER_OPTIONS: Option[] = [
+  {label: 'All', value: Tags.ALL},
+  {label: 'Christmas', value: Tags.CHRISTMAS},
+  {label: 'Halloween', value: Tags.HALLOWEEN},
+];
+
 const ActionBar = () => {
   const {pathname, search} = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<Tab>(FILTER_TABS[0]);
   const [searchText, setSearchText] = useState<string>('');
+  const [filterBy, setFilterBy] = useState('all');
 
   const sortParam = searchParams.get(SearchParam.SORT);
   const sortOptions = getSortOptions(pathname);
+  const filterParam = searchParams.get(SearchParam.FILTER);
 
   const updateSearchParams = (key: string, value: string) => {
     searchParams.set(key, value);
@@ -94,6 +103,15 @@ const ActionBar = () => {
     }
   }, [activeTab, searchParams]);
 
+  useEffect(() => {
+    if (
+      searchParams.get(SearchParam.FILTER) === null &&
+      filterBy !== Tags.ALL
+    ) {
+      updateSearchParams(SearchParam.FILTER, filterBy);
+    }
+  }, [filterBy, searchParams]);
+
   const deleteSearchParam = (key: string) => {
     searchParams.delete(key);
     setSearchParams(searchParams);
@@ -116,6 +134,15 @@ const ActionBar = () => {
 
   const handleSortByChange = (sortBy: string) => {
     updateSearchParams(SearchParam.SORT, sortBy);
+  };
+
+  const handleFilterByChange = (filterBy: string) => {
+    setFilterBy(filterBy);
+    if (filterBy === Tags.ALL) {
+      deleteSearchParam(SearchParam.FILTER);
+    } else {
+      updateSearchParams(SearchParam.FILTER, filterBy);
+    }
   };
 
   const handleChangeSortDirection = () => {
@@ -151,6 +178,7 @@ const ActionBar = () => {
   };
 
   const sortValueForDropdown = (sortParam || '').replace('-', '');
+  const filterValueForDropdown = (filterParam || 'all').replace('-', '');
 
   const renderSortIcon = () => {
     const isSortedDesc = getIsSortedDesc();
@@ -183,6 +211,19 @@ const ActionBar = () => {
           tabs={FILTER_TABS}
           onChange={handleTabChange}
         />
+      </Box>
+      <Box alignItems="center" gap={6}>
+        <label className="sort-dropdown-label">Filter By</label>
+        <Dropdown
+          options={FILTER_OPTIONS}
+          value={filterValueForDropdown}
+          onSelectChange={handleFilterByChange}
+        />
+        {filterValueForDropdown !== Tags.ALL && (
+          <IconButton onClick={() => handleFilterByChange(Tags.ALL)}>
+            <XMarkIcon className="button-icon" />
+          </IconButton>
+        )}
       </Box>
       <Box alignItems="center" gap={6}>
         <label className="sort-dropdown-label">Sort By</label>

@@ -65,12 +65,22 @@ const filterBySearch = (item: MediaEntity, searchParam: string): boolean => {
   });
 };
 
+const filterByTag = (item: MediaEntity, filterParam: string): boolean => {
+  if (!filterParam) {
+    return true;
+  }
+
+  return item.tags.some((tag) => tag === filterParam);
+};
+
 export const getFilteredMediaEntities = (
   items: MediaEntity[],
   searchParams: any
 ) => {
-  return items.filter((item: MediaEntity) =>
-    filterBySearch(item, searchParams.get(SearchParam.SEARCH))
+  return items.filter(
+    (item: MediaEntity) =>
+      filterBySearch(item, searchParams.get(SearchParam.SEARCH)) &&
+      filterByTag(item, searchParams.get(SearchParam.FILTER))
   );
 };
 

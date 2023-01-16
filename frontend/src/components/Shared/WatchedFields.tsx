@@ -75,7 +75,7 @@ const WatchedFields = ({
               }}
               value={dateSeasonWatched}
             />
-            {index !== 0 && (
+            {index !== 0 && isLastItem && (
               <IconButton
                 tooltip={{
                   text: 'Remove season',

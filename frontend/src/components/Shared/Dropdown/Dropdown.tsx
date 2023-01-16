@@ -20,7 +20,7 @@ const SELECT_ITEM_CLASSNAME = 'dropdown-select-item';
 
 const Dropdown = ({options, onSelectChange, value}: DropdownProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const ref = useRef(null);
+  const ref = useRef<any>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
