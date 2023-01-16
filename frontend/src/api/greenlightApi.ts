@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {MediaType, MediaEntity} from '../types/types';
+import {MediaType, MediaEntity, Tags} from '../types/types';
 
 const instance = axios.create({
   baseURL: 'http://192.168.0.135:4000/v1/',
@@ -14,7 +14,7 @@ export type CreateWatchedMediaParams = {
   title: string;
   dateWatched: string;
   dateWatchedSeasons: string[];
-  tags: string[];
+  tags: Tags[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;
@@ -24,11 +24,11 @@ export type CreateWatchedMediaParams = {
   watched: boolean;
 };
 
-export type UpdateWatchedMediaParams = {
-  dateWatched: string;
-  dateWatchedSeasons: string[];
-  tags: string[];
-  rating: number;
+export type UpdateMediaEntityParams = {
+  dateWatched?: string;
+  dateWatchedSeasons?: string[];
+  tags?: string[];
+  rating?: number;
 };
 
 type FetchMediaParams = {
@@ -79,7 +79,7 @@ const greenlightApi = {
     params,
   }: {
     mediaEntityId: string;
-    params: UpdateWatchedMediaParams;
+    params: UpdateMediaEntityParams;
   }): Promise<MediaEntity> => {
     const {data} = await instance.put(`movies/${mediaEntityId}`, params);
     return data.media;

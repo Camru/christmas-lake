@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
-import greenlightApi, {UpdateWatchedMediaParams} from '../../api/greenlightApi';
+import greenlightApi, {UpdateMediaEntityParams} from '../../api/greenlightApi';
 import {getFilteredMediaEntities, getFormattedDate} from '../../helpers/utils';
 import {
   MediaType,
@@ -11,6 +11,7 @@ import {
   SearchParam,
   Colors,
   Notifications,
+  Tags,
 } from '../../types/types';
 import MediaCard from '../MediaCard/MediaCard';
 import Box from '../Shared/Box/Box';
@@ -25,6 +26,9 @@ import Notification from '../Shared/Notification/Notification';
 import Badge from '../Shared/Badge/Badge';
 import {EllipsisVerticalIcon} from '@heroicons/react/24/solid';
 import {ArrowPathIcon, TrashIcon} from '@heroicons/react/24/outline';
+import TagsButton from '../Shared/Tags/TagsButton';
+import {TooltipPosition} from '../Shared/Tooltip/Tooltip';
+import Tag from '../Shared/Tags/Tag';
 
 const WatchedList = (): JSX.Element => {
   const queryClient = useQueryClient();
@@ -80,7 +84,7 @@ const WatchedList = (): JSX.Element => {
   //TODO: [cam]  consider updating dateWatched to the date of the last season
   //watched
   const handleUpdateMediaEntity = (mediaEntity: MediaEntity) => {
-    const params: UpdateWatchedMediaParams = {
+    const params: UpdateMediaEntityParams = {
       dateWatched: dateWatched
         ? dateWatched
         : dateWatchedSeasons[dateWatchedSeasons.length - 1],
@@ -91,6 +95,13 @@ const WatchedList = (): JSX.Element => {
     };
     updateMediaEntityMutation.mutate({mediaEntityId: mediaEntity.id, params});
     handleCloseEditModal();
+  };
+
+  const handleUpdateTags = (updatedTags: Tags[], mediaEntityId: string) => {
+    const params: UpdateMediaEntityParams = {
+      tags: updatedTags,
+    };
+    updateMediaEntityMutation.mutate({mediaEntityId, params});
   };
 
   const renderWatchedList = () => {
@@ -148,6 +159,16 @@ const WatchedList = (): JSX.Element => {
       setUserRating(userRating);
     };
 
+    const renderTags = (itemTags: Tags[]) => {
+      return (
+        <Box gap={10}>
+          {itemTags.map((itemTag) => {
+            return <Tag key={itemTag}>{itemTag}</Tag>;
+          })}
+        </Box>
+      );
+    };
+
     const renderDeleteModal = () => {
       return (
         <Modal
@@ -185,12 +206,24 @@ const WatchedList = (): JSX.Element => {
               seasonDateChangeHandler={handleSelectDateWatchedSeason}
               ratingChangeHandler={handleChangeRating}
             />
-            <Box gap={10} justifyContent="end">
-              <Button
-                onClick={() => setIsDeleteItemModalOpen(true)}
-                color={Colors.DANGER}>
-                <TrashIcon className="button-icon" />
-              </Button>
+            {renderTags(item.tags)}
+            <Box gap={10} justifyContent="space-between">
+              <Box>
+                <TagsButton
+                  onSubmit={(updatedTags) =>
+                    handleUpdateTags(updatedTags, item.id)
+                  }
+                  itemTags={item.tags}
+                />
+                <IconButton
+                  onClick={() => setIsDeleteItemModalOpen(true)}
+                  tooltip={{
+                    text: 'Remove from Watched list',
+                    position: TooltipPosition.LEFT,
+                  }}>
+                  <TrashIcon className="button-icon" />
+                </IconButton>
+              </Box>
               <Button
                 onClick={() => handleUpdateMediaEntity(item)}
                 color={Colors.ACTION}

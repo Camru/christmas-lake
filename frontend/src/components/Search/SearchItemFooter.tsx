@@ -71,7 +71,7 @@ const SearchItemFooter = ({
             toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton
             ratings={searchedByIdQuery.data?.Ratings || []}>
-            <PlusIcon className="button-icon" strokeWidth={2.5} />
+            <PlusIcon className="button-icon search-footer" strokeWidth={2.5} />
           </AddToWatchButton>
           <AddWatchedButton
             className="search-footer"
@@ -79,7 +79,7 @@ const SearchItemFooter = ({
             watchedMediaEntityId={watchedMediaEntityId}
             toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton>
-            <CheckIcon className="button-icon" strokeWidth={2.5} />
+            <CheckIcon className="button-icon search-footer" strokeWidth={2.5} />
           </AddWatchedButton>
         </Box>
         <div style={{textTransform: 'capitalize'}}>{item.Type}</div>

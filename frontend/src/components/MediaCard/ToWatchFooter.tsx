@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
-import greenlightApi from '../../api/greenlightApi';
+import greenlightApi, {UpdateMediaEntityParams} from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
 import {
   capitalizeFirstChar,
@@ -11,9 +11,11 @@ import {
   Colors,
   MediaEntity,
   MediaRating,
+  Notifications,
   RatingSource,
   REACT_QUERY_API_KEYS,
   SearchResult,
+  Tags,
 } from '../../types/types';
 import Box from '../Shared/Box/Box';
 import Modal from '../Shared/Modal/Modal';
@@ -24,6 +26,8 @@ import AddWatchedButton from '../Shared/Button/AddWatchedButton';
 import {TooltipPosition} from '../Shared/Tooltip/Tooltip';
 import {ListBulletIcon, PlusIcon} from '@heroicons/react/24/solid';
 import {TrashIcon} from '@heroicons/react/24/outline';
+import TagsButton from '../Shared/Tags/TagsButton';
+import Notification from '../Shared/Notification/Notification';
 
 const RatingSourceToKeyMap: Record<string, RatingSource> = {
   'Internet Movie Database': RatingSource.IMDB,
@@ -41,11 +45,29 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     useState<boolean>(false);
   const [isExtraDetailsModalOpen, setIsExtraDetailsModalOpen] =
     useState<boolean>(false);
+  const [notification, setNotification] = useState<Notifications>(
+    Notifications.NONE
+  );
 
   const {data, isFetching} = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH_BY_ID, item.title],
     queryFn: () => omdbApi.searchByTitle(item.title),
   });
+
+  const updateMediaEntityMutation = useMutation({
+    mutationFn: greenlightApi.updateWatchedMedia,
+    onSuccess: () => {
+      queryClient.invalidateQueries([REACT_QUERY_API_KEYS.TO_WATCH]);
+      setNotification(Notifications.ADDED);
+    },
+  });
+
+  const handleUpdateMediaEntity = (mediaEntity: MediaEntity, tags: Tags[]) => {
+    const params: UpdateMediaEntityParams = {
+      tags,
+    };
+    updateMediaEntityMutation.mutate({mediaEntityId: mediaEntity.id, params});
+  };
 
   const deleteMovieMutation = useMutation({
     mutationFn: greenlightApi.deleteMovie,
@@ -60,6 +82,18 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
 
   const handleOpenDeleteItemModal = () => {
     setIsDeleteItemModalOpen(true);
+  };
+
+  const handleUpdateTags = (updatedTags: Tags[]) => {
+    handleUpdateMediaEntity(item, updatedTags);
+  };
+
+  const getNotificationText = () => {
+    return {
+      ADDED: <span>Tags Updated</span>,
+      REMOVED: null,
+      NONE: null,
+    }[notification];
   };
 
   const renderExtraDetails = () => {
@@ -210,6 +244,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     Type: item.mediaType,
     Year: item.year,
     imdbID: item.imdbID,
+    tags: item.tags,
   };
 
   return (
@@ -232,6 +267,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
           }}>
           <ListBulletIcon className="button-icon" />
         </IconButton>
+        <TagsButton onSubmit={handleUpdateTags} itemTags={item.tags} />
         <IconButton
           tooltip={{
             text: 'Remove from To Watch list',
@@ -244,6 +280,13 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       </Box>
       {isDeleteItemModalOpen && renderDeleteItemModal()}
       {isExtraDetailsModalOpen && renderExtraDetailsModal()}
+      {notification !== Notifications.NONE && (
+        <Notification
+          onClose={() => setNotification(Notifications.NONE)}
+          color={Colors.TO_WATCH}>
+          {getNotificationText()}
+        </Notification>
+      )}
     </Box>
   );
 };

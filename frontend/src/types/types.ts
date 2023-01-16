@@ -9,7 +9,7 @@ export type MediaEntity = {
   title: string;
   dateWatched: string;
   dateWatchedSeasons: string[];
-  tags: string[];
+  tags: Tags[];
   mediaType: MediaType;
   thumbnail: string;
   imdbID: string;
@@ -25,6 +25,7 @@ export type SearchResult = {
   Type: MediaType;
   Year: string;
   imdbID: string;
+  tags?: Tags[];
 };
 
 export type SearchResultByIdOrTitle = {

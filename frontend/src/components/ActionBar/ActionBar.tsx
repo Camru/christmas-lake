@@ -59,10 +59,10 @@ const getSortOptions = (pathname: string): Option[] => {
   return DEFAULT_SORT_OPTIONS;
 };
 
-const FILTER_OPTIONS: Option[] = [
+export const FILTER_OPTIONS: Option[] = [
   {label: 'All', value: Tags.ALL},
-  {label: 'Christmas', value: Tags.CHRISTMAS},
-  {label: 'Halloween', value: Tags.HALLOWEEN},
+  {label: '🎄 Christmas', value: Tags.CHRISTMAS},
+  {label: '🎃 Halloween', value: Tags.HALLOWEEN},
 ];
 
 const ActionBar = () => {
