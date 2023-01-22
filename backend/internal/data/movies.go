@@ -19,6 +19,7 @@ type Movie struct {
 	Title              string   `json:"title"`
 	DateWatched        string   `json:"dateWatched"`
 	DateWatchedSeasons []string `json:"dateWatchedSeasons"`
+	Tags               []string `json:"tags"`
 	Year               string   `json:"year,omitempty"`
 	MediaType          string   `json:"mediaType"`
 	Thumbnail          string   `json:"thumbnail"`
@@ -56,8 +57,8 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// Define the SQL query for inserting a new record in the movies table and
 	// returning the system-generated data.
 	query := `
-	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, dateWatchedSeasons)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	INSERT INTO media (title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, dateWatchedSeasons, tags)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	RETURNING id, version, imdbID`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -67,7 +68,7 @@ func (m MovieModel) Insert(movie *Movie) error {
 	// from the movie struct. Declaring this slice immediately next to our SQL
 	// query helps to make it nice and clear *what values are being used where*
 	// in the query.
-	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating, movie.Ratings, movie.Watched, pq.Array(movie.DateWatchedSeasons)}
+	args := []any{movie.Title, movie.DateWatched, movie.Year, movie.MediaType, movie.Thumbnail, movie.ImdbID, movie.Rating, movie.Ratings, movie.Watched, pq.Array(movie.DateWatchedSeasons), pq.Array((movie.Tags))}
 
 	// Use the QueryRow() method to execute the SQL query on our connection
 	// pool, passing in the args slice as a variadic parameter and scanning the
@@ -88,7 +89,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	}
 
 	// Define the SQL query for retrieving the movie data.
-	query := `SELECT id, title, dateWatched, dateWatchedSeasons, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version
+	query := `SELECT id, title, dateWatched, dateWatchedSeasons, tags, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version
 	FROM media 
 	WHERE id = $1`
 
@@ -110,6 +111,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 		&movie.Title,
 		&movie.DateWatched,
 		pq.Array(&movie.DateWatchedSeasons),
+		pq.Array(&movie.Tags),
 		&movie.Year,
 		&movie.MediaType,
 		&movie.Thumbnail,
@@ -140,8 +142,8 @@ func (m MovieModel) Update(movie *Movie) error {
 	// version number.
 	query := `
 	UPDATE media
-	SET dateWatched = $1, dateWatchedSeasons = $2, rating = $3, version = version + 1
-	WHERE id = $4 AND version = $5
+	SET dateWatched = $1, dateWatchedSeasons = $2, tags = $3, rating = $4, version = version + 1
+	WHERE id = $5 AND version = $6
 	RETURNING version`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -152,6 +154,7 @@ func (m MovieModel) Update(movie *Movie) error {
 	args := []any{
 		movie.DateWatched,
 		pq.Array(movie.DateWatchedSeasons),
+		pq.Array(movie.Tags),
 		movie.Rating,
 		movie.ID,
 		movie.Version,
@@ -211,7 +214,7 @@ func (m MovieModel) Delete(id int64) error {
 func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([]*Movie, error) {
 	// Construct the SQL query to retrieve all movie records.
 	query := fmt.Sprintf(`
-	SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version, dateWatchedSeasons
+	SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version, dateWatchedSeasons, tags
 	FROM media
 	WHERE (watched = true AND $1 = 'true' OR watched = false AND $1 = 'false' OR $1 = '')
 	AND (mediaType = $2 OR $2 = '')
@@ -255,6 +258,7 @@ func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([
 			&movie.Watched,
 			&movie.Version,
 			pq.Array(&movie.DateWatchedSeasons),
+			pq.Array(&movie.Tags),
 		)
 		if err != nil {
 			return nil, err

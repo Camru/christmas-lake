@@ -23,6 +23,7 @@ link: file:///Users/crudisill/Sync/Code/go/lets-go-further/html/06.02-working-wi
     Title       string `json:"title"`
     DateWatched string `json:"dateWatched"`
     DateWatchedSeasons []string `json:"dateWatchedSeasons"`
+    Tags []string `json:"tags"`
     Year        string `json:"year,omitempty"`
     MediaType   string `json:"mediaType"`
     Thumbnail   string `json:"thumbnail"`

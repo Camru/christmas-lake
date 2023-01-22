@@ -30,6 +30,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Title              string   `json:"title"`
 		DateWatched        string   `json:"dateWatched"`
 		DateWatchedSeasons []string `json:"dateWatchedSeasons"`
+		Tags               []string `json:"tags"`
 		Year               string   `json:"year,omitempty"`
 		MediaType          string   `json:"mediaType"`
 		Thumbnail          string   `json:"thumbnail"`
@@ -57,6 +58,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Title:              input.Title,
 		DateWatched:        input.DateWatched,
 		DateWatchedSeasons: input.DateWatchedSeasons,
+		Tags:               input.Tags,
 		Year:               input.Year,
 		MediaType:          input.MediaType,
 		Thumbnail:          input.Thumbnail,
@@ -162,6 +164,7 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 	var input struct {
 		DateWatched        *string   `json:"dateWatched"`
 		DateWatchedSeasons *[]string `json:"dateWatchedSeasons"`
+		Tags               *[]string `json:"tags"`
 		Rating             *float32  `json:"rating"`
 	}
 
@@ -186,6 +189,10 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 	if input.DateWatchedSeasons != nil {
 		movie.DateWatchedSeasons = *input.DateWatchedSeasons
+	}
+
+	if input.Tags != nil {
+		movie.Tags = *input.Tags
 	}
 
 	// if input.Genres != nil {
