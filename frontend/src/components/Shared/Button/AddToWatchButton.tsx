@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import classNames from 'classnames';
-import { useState } from 'react';
+import {useState} from 'react';
 import greenlightApi, {
   CreateWatchedMediaParams,
   Rating,
@@ -10,10 +10,12 @@ import {
   Notifications,
   REACT_QUERY_API_KEYS,
   SearchResult,
+  URL_PATHS,
 } from '../../../types/types';
 import IconButton from './IconButton';
 import Notification from '../Notification/Notification';
-import { TooltipPosition } from '../Tooltip/Tooltip';
+import {TooltipPosition} from '../Tooltip/Tooltip';
+import {Link} from 'react-router-dom';
 
 type AddToWatchButtonProps = {
   children: React.ReactNode;
@@ -89,14 +91,14 @@ const AddToWatchButton = ({
   const getNotificationText = () => {
     return {
       ADDED: (
-        <span>
+        <Link to={`/${URL_PATHS.TO_WATCH}`}>
           Added to <strong>To Watch</strong> list
-        </span>
+        </Link>
       ),
       REMOVED: (
-        <span>
+        <Link to={`/${URL_PATHS.TO_WATCH}`}>
           Removed from <strong>To Watch</strong> list
-        </span>
+        </Link>
       ),
       NONE: null,
     }[notification];

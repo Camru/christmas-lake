@@ -1,8 +1,11 @@
 import {
   ArrowDownCircleIcon,
+  ArrowsPointingInIcon,
   ArrowUpCircleIcon,
+  FunnelIcon,
 } from '@heroicons/react/24/outline';
 import {MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/solid';
+import classNames from 'classnames';
 import {useEffect, useState} from 'react';
 import {useLocation, useSearchParams} from 'react-router-dom';
 import {
@@ -61,16 +64,19 @@ const getSortOptions = (pathname: string): Option[] => {
 
 export const FILTER_OPTIONS: Option[] = [
   {label: 'All', value: Tags.ALL},
-  {label: '🎄 Christmas', value: Tags.CHRISTMAS},
-  {label: '🎃 Halloween', value: Tags.HALLOWEEN},
+  {label: 'Nonseasonal', value: Tags.NONSEASONAL},
+  {label: '🎄 Christmas', value: Tags.CHRISTMAS, isTag: true},
+  {label: '🎃 Halloween', value: Tags.HALLOWEEN, isTag: true},
 ];
 
 const ActionBar = () => {
   const {pathname, search} = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<Tab>(FILTER_TABS[0]);
-  const [searchText, setSearchText] = useState<string>('');
-  const [filterBy, setFilterBy] = useState('all');
+  const [searchText, setSearchText] = useState<string>(
+    searchParams.get(SearchParam.SEARCH) || ''
+  );
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
 
   const sortParam = searchParams.get(SearchParam.SORT);
   const sortOptions = getSortOptions(pathname);
@@ -91,6 +97,11 @@ const ActionBar = () => {
   useEffect(() => {
     if (searchText && searchParams.get(SearchParam.SEARCH) === null) {
       updateSearchParams(SearchParam.SEARCH, searchText);
+      return;
+    }
+
+    if (searchText && searchParams.get(SearchParam.SEARCH) === '') {
+      setSearchText('');
     }
   }, [searchText, searchParams]);
 
@@ -102,15 +113,6 @@ const ActionBar = () => {
       updateSearchParams(SearchParam.MEDIA_TYPE, activeTab.value);
     }
   }, [activeTab, searchParams]);
-
-  useEffect(() => {
-    if (
-      searchParams.get(SearchParam.FILTER) === null &&
-      filterBy !== Tags.ALL
-    ) {
-      updateSearchParams(SearchParam.FILTER, filterBy);
-    }
-  }, [filterBy, searchParams]);
 
   const deleteSearchParam = (key: string) => {
     searchParams.delete(key);
@@ -136,8 +138,7 @@ const ActionBar = () => {
     updateSearchParams(SearchParam.SORT, sortBy);
   };
 
-  const handleFilterByChange = (filterBy: string) => {
-    setFilterBy(filterBy);
+  const handleFilterByChange = (filterBy: Tags) => {
     if (filterBy === Tags.ALL) {
       deleteSearchParam(SearchParam.FILTER);
     } else {
@@ -177,6 +178,10 @@ const ActionBar = () => {
     }
   };
 
+  const handleCollapseActionBar = () => {
+    setIsCollapsed((prevIsCollapsed) => !prevIsCollapsed);
+  };
+
   const sortValueForDropdown = (sortParam || '').replace('-', '');
   const filterValueForDropdown = (filterParam || 'all').replace('-', '');
 
@@ -198,71 +203,96 @@ const ActionBar = () => {
     return null;
   }
 
+  const isFiltersApplied = searchText.length || filterParam;
+
   return (
-    <Box
-      p="20px 30px 25px 30px"
-      justifyContent="space-between"
-      alignItems="center"
-      flexWrap="wrap"
-      gap={30}>
-      <Box mr="auto">
+    <Box className="action-bar" alignItems="center" flexWrap="wrap" gap={30}>
+      <Box className="action-bar-tabs-container" mr="auto">
         <Tabs
           activeTab={activeTab}
           tabs={FILTER_TABS}
           onChange={handleTabChange}
         />
-      </Box>
-      <Box alignItems="center" gap={6}>
-        <label className="sort-dropdown-label">Filter By</label>
-        <Dropdown
-          options={FILTER_OPTIONS}
-          value={filterValueForDropdown}
-          onSelectChange={handleFilterByChange}
-        />
-        {filterValueForDropdown !== Tags.ALL && (
-          <IconButton onClick={() => handleFilterByChange(Tags.ALL)}>
-            <XMarkIcon className="button-icon" />
+        <div style={{position: 'relative'}}>
+          <IconButton
+            className="collapse-button"
+            onClick={handleCollapseActionBar}>
+            <FunnelIcon className="button-icon" />
           </IconButton>
+          {isFiltersApplied && <span className="indicator" />}
+        </div>
+      </Box>
+      <Box
+        className={classNames('action-bar-collapsible', {
+          hidden: isCollapsed,
+        })}
+        gap={40}
+        flexWrap="nowrap">
+        <Box
+        className="action-bar-dropdown-container"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
+          gap={40}>
+          <Box className="action-bar-dropdown" alignItems="center" gap={6}>
+            <label className="sort-dropdown-label">Filter By</label>
+            <Box position="relative">
+              <Dropdown
+                options={FILTER_OPTIONS}
+                value={filterValueForDropdown}
+                onSelectChange={handleFilterByChange}
+              />
+              {filterValueForDropdown !== Tags.ALL && (
+                <IconButton
+                  onClick={() => handleFilterByChange(Tags.ALL)}
+                  style={{position: 'absolute', right: -33}}>
+                  <XMarkIcon className="button-icon" />
+                </IconButton>
+              )}
+            </Box>
+          </Box>
+          <Box className="action-bar-dropdown" alignItems="center" gap={6}>
+            <label className="sort-dropdown-label">Sort By</label>
+            <Box gap={6}>
+              <Dropdown
+                options={sortOptions}
+                value={sortValueForDropdown}
+                onSelectChange={handleSortByChange}
+              />
+              {renderSortIcon()}
+            </Box>
+          </Box>
+        </Box>
+
+        {!pathname.includes(URL_PATHS.SEARCH) && (
+          <Box className="search-input" alignItems="center" position="relative">
+            <input
+              className="actionbar-search"
+              placeholder="Search"
+              onChange={handleChangeSearch}
+              onKeyDown={handleKeyDownSearch}
+              value={searchText}
+            />
+
+            {searchText.length !== 0 ? (
+              <IconButton
+                onClick={() => updateSearchParam('')}
+                color={Colors.LIGHT}
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                }}>
+                <XMarkIcon className="button-icon" />
+              </IconButton>
+            ) : (
+              <MagnifyingGlassIcon
+                className="search-input-icon"
+                style={{width: 15}}
+              />
+            )}
+          </Box>
         )}
       </Box>
-      <Box alignItems="center" gap={6}>
-        <label className="sort-dropdown-label">Sort By</label>
-        <Dropdown
-          options={sortOptions}
-          value={sortValueForDropdown}
-          onSelectChange={handleSortByChange}
-        />
-        {renderSortIcon()}
-      </Box>
-
-      {!pathname.includes(URL_PATHS.SEARCH) && (
-        <Box className="search-input" alignItems="center" position="relative">
-          <input
-            className="actionbar-search"
-            placeholder="Search"
-            onChange={handleChangeSearch}
-            onKeyDown={handleKeyDownSearch}
-            value={searchText}
-          />
-
-          {searchText.length !== 0 ? (
-            <IconButton
-              onClick={() => updateSearchParam('')}
-              color={Colors.LIGHT}
-              style={{
-                position: 'absolute',
-                right: 0,
-              }}>
-              <XMarkIcon className="button-icon" />
-            </IconButton>
-          ) : (
-            <MagnifyingGlassIcon
-              className="search-input-icon"
-              style={{width: 15}}
-            />
-          )}
-        </Box>
-      )}
     </Box>
   );
 };

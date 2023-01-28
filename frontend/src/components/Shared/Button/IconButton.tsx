@@ -7,7 +7,7 @@ import './Button.less';
 
 interface IconButtonProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick: (e?: any) => void;
   color?: Colors;
   bgColor?: Colors;
   tooltip?: {

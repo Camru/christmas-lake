@@ -2,6 +2,7 @@ import {PlusIcon} from '@heroicons/react/24/solid';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import classNames from 'classnames';
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 import greenlightApi, {
   CreateWatchedMediaParams,
 } from '../../../api/greenlightApi';
@@ -12,6 +13,7 @@ import {
   Notifications,
   REACT_QUERY_API_KEYS,
   SearchResult,
+  URL_PATHS,
 } from '../../../types/types';
 import Box from '../Box/Box';
 import Modal from '../Modal/Modal';
@@ -30,8 +32,6 @@ type AddWatchedButtonProps = {
   onSuccess?: () => void;
   className?: string;
 };
-
-//TODO: [cam] convert rating to a number so we can sort easier
 
 const convertToMediaEntity = (
   item: SearchResult,
@@ -149,14 +149,14 @@ const AddWatchedButton = ({
   const getNotificationText = () => {
     return {
       ADDED: (
-        <span>
+        <Link to={`/${URL_PATHS.WATCHED}`}>
           Added to <strong>Watched</strong> list
-        </span>
+        </Link>
       ),
       REMOVED: (
-        <span>
+        <Link to={`/${URL_PATHS.WATCHED}`}>
           Removed from <strong>Watched</strong> list
-        </span>
+        </Link>
       ),
       NONE: null,
     }[notification];

@@ -7,15 +7,15 @@ import Button from '../Button/Button';
 import IconButton from '../Button/IconButton';
 import Modal from '../Modal/Modal';
 import {TooltipPosition} from '../Tooltip/Tooltip';
-import Select, {MultiValue} from 'react-select';
 import {FILTER_OPTIONS} from '../../ActionBar/ActionBar';
 
-const TAG_OPTIONS = FILTER_OPTIONS.filter(({value}) => {
-  return value !== Tags.ALL;
+const TAG_OPTIONS = FILTER_OPTIONS.filter(({isTag}) => {
+  return isTag;
 });
 
 import './Tags.less';
 import {Option} from '../Dropdown/Dropdown';
+import MultiSelect from '../Dropdown/MultiSelect';
 
 type TagsButtonProps = {
   itemTags: Tags[];
@@ -28,7 +28,7 @@ const TagsButton = ({onSubmit, itemTags}: TagsButtonProps): JSX.Element => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedTags, setSelectedTags] = useState<MultiValue<Option>>(
+  const [selectedTags, setSelectedTags] = useState<Option[]>(
     itemTagsToOptions as Option[]
   );
 
@@ -39,10 +39,8 @@ const TagsButton = ({onSubmit, itemTags}: TagsButtonProps): JSX.Element => {
     onSubmit(tagValues);
   };
 
-  const handleSelectChange = (tagSelectionTest: MultiValue<Option>) => {
-    //@ts-ignore
-    tagSelectionTest.sort((tagA, tagB) => tagA.value.localeCompare(tagB.value));
-    setSelectedTags(tagSelectionTest);
+  const handleMultiSelectChange = (newlySelectedTags: Option[]) => {
+    setSelectedTags(newlySelectedTags);
   };
 
   const isChanged =
@@ -53,13 +51,11 @@ const TagsButton = ({onSubmit, itemTags}: TagsButtonProps): JSX.Element => {
       <Modal title="Add tags" onClose={() => setIsModalOpen(false)}>
         <Box flexDirection="column" gap={20}>
           <Box width="300px">
-            <Select
-              value={selectedTags}
-              isMulti
+            <MultiSelect
+              value={selectedTags as Option[]}
               options={TAG_OPTIONS}
-              className="tags-select"
               placeholder="Select tags"
-              onChange={handleSelectChange}
+              onChange={handleMultiSelectChange}
             />
           </Box>
           <Box justifyContent="end" alignItems="center">

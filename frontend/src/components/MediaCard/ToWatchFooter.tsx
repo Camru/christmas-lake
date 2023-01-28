@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import greenlightApi, {UpdateMediaEntityParams} from '../../api/greenlightApi';
 import omdbApi from '../../api/omdbApi';
 import {
@@ -48,6 +48,8 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
   const [notification, setNotification] = useState<Notifications>(
     Notifications.NONE
   );
+  const viewportSize = useRef([window.innerWidth, window.innerHeight]);
+  const [viewportWidth] = viewportSize.current;
 
   const {data, isFetching} = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH_BY_ID, item.title],
@@ -90,7 +92,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
 
   const getNotificationText = () => {
     return {
-      ADDED: <span>Tags Updated</span>,
+      ADDED: <span>Tags updated</span>,
       REMOVED: null,
       NONE: null,
     }[notification];
@@ -154,53 +156,37 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
       },
     ];
 
-    const labels = details.map(({label, isHidden}) => {
-      if (isHidden) {
-        return null;
-      }
-      return <label key={label}>{label}</label>;
-    });
-
-    const values = details.map(({value, label, isHidden, style = {}}) => {
+    return details.map(({label, value, isHidden}) => {
       if (isHidden) {
         return null;
       }
       return (
-        <p key={label} style={style}>
-          {value ? value : 'N/A'}
-        </p>
+        <div className="extra-detail-row" key={label}>
+          <label>{label} </label>
+          <p>{value}</p>
+        </div>
       );
     });
+  };
 
+  const renderRating = (rating: MediaRating) => {
     return (
-      <Box gap={30}>
-        <Box flexDirection="column" gap={10}>
-          {labels}
-        </Box>
-        <Box flexDirection="column" gap={10}>
-          {values}
-        </Box>
-      </Box>
+      <li key={rating.Source} className="rating-list-item">
+        <Rating
+          value={rating.Value}
+          source={RatingSourceToKeyMap[rating.Source]}
+        />
+      </li>
     );
   };
 
   const renderRatings = () => {
-    const renderRating = (rating: MediaRating) => {
-      return (
-        <li key={rating.Source} className="rating">
-          <Rating
-            value={rating.Value}
-            source={RatingSourceToKeyMap[rating.Source]}
-          />
-        </li>
-      );
-    };
-
     const ratings = JSON.parse(item.ratings) || [];
+    const visibleRatings = viewportWidth <= 375 ? ratings.slice(0, 2) : ratings;
 
     return (
       <Box className="ratings-list">
-        {ratings.length ? ratings.map(renderRating) : <p>No Ratings</p>}
+        {ratings.length ? visibleRatings.map(renderRating) : <p>No Ratings</p>}
       </Box>
     );
   };

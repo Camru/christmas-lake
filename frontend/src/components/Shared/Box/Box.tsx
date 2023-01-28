@@ -9,7 +9,7 @@ type BoxProps = {
   flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse';
   alignItems: 'normal' | 'center' | 'start' | 'end';
   justifyContent: string;
-  flexWrap: 'wrap';
+  flexWrap: 'wrap' | 'nowrap';
   gap: number;
   style: any;
   width: string;
@@ -17,6 +17,19 @@ type BoxProps = {
   position: string;
   children: React.ReactNode;
 };
+
+const getPixels = (prop: string | number | undefined) => {
+  if (prop === undefined) {
+    return '0';
+  }
+
+  if (typeof prop === 'number') {
+    return `${prop}px`;
+  }
+
+  return prop;
+};
+
 const Box = ({
   m,
   mt,
@@ -41,10 +54,10 @@ const Box = ({
       return m;
     }
 
-    const top = mt || '0';
-    const right = mr || '0';
-    const bottom = mb || '0';
-    const left = ml || '0';
+    const top = getPixels(mt);
+    const right = getPixels(mr);
+    const bottom = getPixels(mb);
+    const left = getPixels(ml);
 
     return `${top} ${right} ${bottom} ${left}`;
   };

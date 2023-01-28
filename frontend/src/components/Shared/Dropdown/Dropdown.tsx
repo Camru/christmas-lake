@@ -8,12 +8,13 @@ export type Option = {
   value: string;
   label: string;
   isClientSort?: boolean;
+  isTag?: boolean;
 };
 
 type DropdownProps = {
   value: string;
   options: Option[];
-  onSelectChange: (value: string) => void;
+  onSelectChange: (value: any) => void;
 };
 
 const SELECT_ITEM_CLASSNAME = 'dropdown-select-item';

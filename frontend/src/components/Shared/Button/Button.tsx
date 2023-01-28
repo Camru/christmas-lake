@@ -1,11 +1,14 @@
 import React from 'react';
 import {Colors} from '../../../types/types';
+import Box from '../Box/Box';
 
 import './Button.less';
 
 type ButtonProps = {
   children: React.ReactNode;
+  className?: string;
   disabled?: boolean;
+  Icon?: any;
   onClick: (e?: any) => void;
   onKeyDown?: (e?: any) => void;
   style?: {};
@@ -14,8 +17,10 @@ type ButtonProps = {
 };
 
 const Button = ({
+  className,
   color,
   children,
+  Icon,
   disabled,
   ...rest
 }: ButtonProps): JSX.Element => {
@@ -24,12 +29,31 @@ const Button = ({
       return '';
     }
 
-    return color ? color : Colors.LIGHT;
+    return color ? color : Colors.ACTION;
   };
+
+  const buttonClass = className ? className : 'button-primary';
+
+  if (Icon) {
+    return (
+      <button
+        className={buttonClass}
+        disabled={disabled}
+        {...rest}
+        style={{
+          backgroundColor: getBackgroundColor(),
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+        }}>
+        <Icon width="12px" /> {children}
+      </button>
+    );
+  }
 
   return (
     <button
-      className="button-primary"
+      className={buttonClass}
       disabled={disabled}
       {...rest}
       style={{backgroundColor: getBackgroundColor()}}>

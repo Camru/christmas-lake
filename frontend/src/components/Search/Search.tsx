@@ -16,7 +16,7 @@ import SearchItemFooter from './SearchItemFooter';
 const Search = () => {
   const [currentSearch, setCurrentSearch] = useState('');
 
-  const {data, isFetching, refetch} = useQuery({
+  const {data, isFetching, refetch, isFetched} = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH],
     queryFn: () => omdbApi.search(currentSearch),
     enabled: false,
@@ -48,11 +48,11 @@ const Search = () => {
       return <p>loading..</p>;
     }
 
-    if (!data?.length) {
+    if (currentSearch && isFetched && !data?.length) {
       return <p>No results found</p>;
     }
 
-    return data.map(renderFoundItems);
+    return data?.map(renderFoundItems);
   };
 
   const getWatchedMediaEntityId = (imdbId: string): string | undefined => {
@@ -69,7 +69,6 @@ const Search = () => {
     return match?.id;
   };
 
-  //TODO: [cam] allow reversing the action by removing it once you add it
   const getToWatchMediaEntityId = (imdbId: string): string | undefined => {
     if (fetchToWatchMedia.isLoading || !fetchToWatchMedia.data) {
       return undefined;
@@ -84,7 +83,6 @@ const Search = () => {
     return match?.id;
   };
 
-  //TODO: [cam]  add footer component that fetches the ratings
   const renderFoundItems = (item: SearchResult) => {
     return (
       <MediaCard

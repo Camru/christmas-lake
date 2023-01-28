@@ -1,4 +1,4 @@
-import {MediaEntity, SearchParam} from '../types/types';
+import {MediaEntity, SearchParam, Tags} from '../types/types';
 
 export const convertGenresToArr = (str: string): string[] => {
   return [str];
@@ -68,6 +68,12 @@ const filterBySearch = (item: MediaEntity, searchParam: string): boolean => {
 const filterByTag = (item: MediaEntity, filterParam: string): boolean => {
   if (!filterParam) {
     return true;
+  }
+
+  if (filterParam === Tags.NONSEASONAL) {
+    return item.tags.every(
+      (tag) => ![Tags.CHRISTMAS, Tags.HALLOWEEN].includes(tag)
+    );
   }
 
   return item.tags.some((tag) => tag === filterParam);

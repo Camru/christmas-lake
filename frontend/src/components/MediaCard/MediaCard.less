@@ -1,7 +1,5 @@
 .media-card {
 	position: relative;
-	// width: var(--media-card-width);
-	// height: var(--media-card-height);
 	border: 1px solid #545454;
 	border-radius: var(--media-card-border-radius);
 	background-color: #1c1330;
@@ -20,6 +18,7 @@
 		bottom: 0;
 		left: 0;
 		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
 		background-color: #152636c2;
 		border-radius: 0px 0px 9px 9px;
 		padding: 10px;
@@ -38,4 +37,39 @@
 		font-size: 14px;
 	}
 
+}
+
+.extra-detail-row {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 20px;
+}
+
+.watched-footer-date {
+	font-size: 12px;
+}
+
+@media (max-width: 375px) {
+	.media-card {
+		width: 172px;
+	}
+
+	.media-card-header {
+		font-size: 13px;
+	}
+
+	.media-card-footer {
+		.rating {
+			img {
+				width: 12px;
+			}
+
+			font-size: 9px;
+		}
+	}
+
+	.watched-footer-date {
+		font-size: 9px;
+		white-space: nowrap;
+	}
 }

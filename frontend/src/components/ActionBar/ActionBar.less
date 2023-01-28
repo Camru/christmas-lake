@@ -1,3 +1,7 @@
+.action-bar {
+	padding: 20px 30px 10px 30px;
+}
+
 .actionbar-search {
 	background-color: var(--color-input-bg);
 	color: white;
@@ -22,5 +26,70 @@
 	&:hover {
 		cursor: pointer;
 		opacity: 0.6;
+	}
+}
+
+.collapse-button {
+	visibility: hidden;
+}
+
+.indicator {
+	visibility: hidden;
+	position: absolute;
+	top: 6px;
+	right: 5px;
+	height: 6px;
+	width: 6px;
+	background-color: var(--color-accent);
+	border-radius: 50%;
+	border: 1px solid;
+}
+
+@media (max-width: 375px) {
+	.action-bar {
+		padding: var(--mobile-padding);
+		gap: 0 !important;
+		padding-bottom: 0;
+	}
+
+	.action-bar-tabs-container {
+		margin: 0;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.action-bar-dropdown {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+	}
+
+	.actionbar-search {
+		width: 260px;
+	}
+
+
+	.action-bar-collapsible {
+		gap: 10px !important;
+		flex-wrap: wrap !important;
+		margin-top: 10px !important;
+		visibility: visible;
+		transition: height ease 0.2s;
+		height: 85.5px;
+
+		&.hidden {
+			visibility: hidden;
+			height: 0px;
+			margin-top: 0 !important
+		}
+
+	}
+
+	.collapse-button,
+	.indicator {
+		visibility: visible;
+	}
+
+	.action-bar-dropdown-container {
+		order: 2;
 	}
 }

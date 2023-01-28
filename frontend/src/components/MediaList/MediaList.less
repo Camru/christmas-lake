@@ -1,7 +1,21 @@
+.media-card-list-container {
+	background-color: var(--color-body-bg);
+	position: relative;
+}
+
 .media-card-list {
 	padding-bottom: var(--padding-md);
 	display: grid;
 	gap: 30px;
 	grid-template-columns: repeat(auto-fill, var(--media-card-width));
+}
 
+@media (max-width: 375px) {
+	.media-card-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: 10px;
+		padding-bottom: 80px;
+	}
 }

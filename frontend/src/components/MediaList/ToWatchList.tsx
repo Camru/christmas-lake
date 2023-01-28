@@ -17,11 +17,10 @@ import {
 import MediaCard from '../MediaCard/MediaCard';
 import ToWatchFooter from '../MediaCard/ToWatchFooter';
 import Box from '../Shared/Box/Box';
+import EmptyData from '../Shared/EmptyData/EmptyData';
+import FilterSummary from '../Shared/FilterSummary/FilterSummary';
 
 import './MediaList.less';
-
-//TODO: [cam] Handle adding duplicates. You can currently add duplicates to
-//Watched by adding from the Search page and adding from the To Watch page
 
 const ToWatchList = (): JSX.Element => {
   const [searchParams] = useSearchParams();
@@ -85,34 +84,33 @@ const ToWatchList = (): JSX.Element => {
       return [];
     }
 
+    const filteredItems = getFilteredMediaEntities(
+      fetchToWatchMedia.data,
+      searchParams
+    );
+
     if (isClientSortOption) {
       if (sortParam?.includes(RatingSourceSortParam.ROTTEN_TOMATOES)) {
         if (sortParam.startsWith('-')) {
           return sortByRatings(
-            fetchToWatchMedia.data,
+            filteredItems,
             RatingSource.ROTTEN_TOMATOES
           ).reverse();
         } else {
-          return sortByRatings(
-            fetchToWatchMedia.data,
-            RatingSource.ROTTEN_TOMATOES
-          );
+          return sortByRatings(filteredItems, RatingSource.ROTTEN_TOMATOES);
         }
       }
 
       if (sortParam?.includes(RatingSourceSortParam.IMDB)) {
         if (sortParam.startsWith('-')) {
-          return sortByRatings(
-            fetchToWatchMedia.data,
-            RatingSource.IMDB
-          ).reverse();
+          return sortByRatings(filteredItems, RatingSource.IMDB).reverse();
         } else {
-          return sortByRatings(fetchToWatchMedia.data, RatingSource.IMDB);
+          return sortByRatings(filteredItems, RatingSource.IMDB);
         }
       }
     }
 
-    return getFilteredMediaEntities(fetchToWatchMedia.data, searchParams);
+    return filteredItems;
   };
 
   const filteredItems = getFilteredItems();
@@ -127,11 +125,11 @@ const ToWatchList = (): JSX.Element => {
     }
 
     if (fetchToWatchMedia.isSuccess && !fetchToWatchMedia.data.length) {
-      return <h1>No movies found</h1>;
+      return <EmptyData mediaTypeParam={mediaTypeParam} />;
     }
 
     if (!filteredItems.length) {
-      return <h1>No Items found.</h1>;
+      return <EmptyData mediaTypeParam={mediaTypeParam} />;
     }
 
     return filteredItems.map((item: MediaEntity) => {
@@ -148,7 +146,11 @@ const ToWatchList = (): JSX.Element => {
   };
 
   return (
-    <Box flexDirection="column">
+    <Box className="media-card-list-container" flexDirection="column">
+      <FilterSummary
+        totalFilteredItems={filteredItems.length}
+        totalItems={fetchToWatchMedia.data?.length || 0}
+      />
       <div className="media-card-list">{renderToWatchList()}</div>
     </Box>
   );

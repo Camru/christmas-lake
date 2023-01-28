@@ -64,7 +64,7 @@ const WatchedFields = ({
       const isLastItem = index + 1 === dateWatchedSeasons?.length;
       return (
         <Box key={`${dateSeasonWatched}-${index}`} alignItems="center" gap={20}>
-          <p>Season {index + 1}</p>
+          <p style={{whiteSpace: 'nowrap', fontSize: 14}}>Season {index + 1}</p>
           <Box alignItems="center" gap={5}>
             <input
               className="date-picker-input"
@@ -95,7 +95,7 @@ const WatchedFields = ({
   };
 
   return (
-    <Box flexDirection="column" gap={25} m="15px 0" width="100%">
+    <Box flexDirection="column" gap={25} mt={15} width="100%">
       {isSeries ? (
         renderSeriesFields()
       ) : (

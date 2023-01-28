@@ -32,14 +32,14 @@ const SearchItemFooter = ({
 }: SearchItemFooterProps) => {
   const searchedByIdQuery = useQuery({
     queryKey: [REACT_QUERY_API_KEYS.OMDB_SEARCH_BY_ID, item.Title],
-    queryFn: () => omdbApi.searchByTitle(item.Title),
+    queryFn: () => omdbApi.searchByTitle(item.Title), 
   });
 
   //TODO: [cam] consolidate this with ToWatchFooter
   const renderRatings = () => {
     const renderRating = (rating: MediaRating) => {
       return (
-        <li key={rating.Source} className="rating">
+        <li key={rating.Source} className="rating-list-item">
           <Rating
             value={rating.Value}
             source={RatingSourceToKeyMap[rating.Source]}
@@ -63,7 +63,7 @@ const SearchItemFooter = ({
         {renderRatings()}
       </Box>
       <Box width="100%" justifyContent="space-between" alignItems="center">
-        <Box gap={7}>
+        <Box gap={7} className="search-item-footer">
           <AddToWatchButton
             className="search-footer"
             item={item}
@@ -79,11 +79,16 @@ const SearchItemFooter = ({
             watchedMediaEntityId={watchedMediaEntityId}
             toWatchMediaEntityId={toWatchMediaEntityId}
             isIconButton>
-            <CheckIcon className="button-icon search-footer" strokeWidth={2.5} />
+            <CheckIcon
+              className="button-icon search-footer"
+              strokeWidth={2.5}
+            />
           </AddWatchedButton>
         </Box>
-        <div style={{textTransform: 'capitalize'}}>{item.Type}</div>
-        <div>{item.Year}</div>
+        <div style={{textTransform: 'capitalize', fontSize: 11}}>
+          {item.Type}
+        </div>
+        <div style={{fontSize: 11, whiteSpace: 'nowrap'}}>{item.Year}</div>
       </Box>
     </Box>
   );

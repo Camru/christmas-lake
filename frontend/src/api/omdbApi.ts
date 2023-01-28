@@ -15,6 +15,10 @@ const omdbApi = {
       },
     });
 
+    if (data.Error) {
+      return [];
+    }
+
     return data.Search;
   },
 

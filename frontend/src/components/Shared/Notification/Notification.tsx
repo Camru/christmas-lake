@@ -16,8 +16,6 @@ const Notification = ({
   onClose,
   children,
 }: NotificationProps): JSX.Element => {
-  const handleClickOutside = (e: any) => {};
-
   const handleKeyDown = (e: any) => {
     if (e.key === 'Escape') {
       onClose();
@@ -25,7 +23,6 @@ const Notification = ({
   };
 
   useEffect(() => {
-    window.addEventListener('click', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
 
     setTimeout(() => {
@@ -33,7 +30,6 @@ const Notification = ({
     }, 3000);
 
     return () => {
-      window.removeEventListener('click', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);

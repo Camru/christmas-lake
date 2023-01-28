@@ -102,6 +102,7 @@ export enum Colors {
   DISABLED = '#c3c3c3',
   WATCHED = '#7500dd',
   TO_WATCH = '#00873c',
+  NONE = 'transparent',
 }
 
 export enum RatingSource {
@@ -130,6 +131,7 @@ export enum Notifications {
 }
 
 export enum Tags {
+  NONSEASONAL = 'nonseasonal',
   ALL = 'all',
   CHRISTMAS = 'christmas',
   HALLOWEEN = 'halloween',

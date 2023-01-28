@@ -29,6 +29,8 @@ import {ArrowPathIcon, TrashIcon} from '@heroicons/react/24/outline';
 import TagsButton from '../Shared/Tags/TagsButton';
 import {TooltipPosition} from '../Shared/Tooltip/Tooltip';
 import Tag from '../Shared/Tags/Tag';
+import FilterSummary from '../Shared/FilterSummary/FilterSummary';
+import EmptyData from '../Shared/EmptyData/EmptyData';
 
 const WatchedList = (): JSX.Element => {
   const queryClient = useQueryClient();
@@ -81,8 +83,6 @@ const WatchedList = (): JSX.Element => {
     deleteMediaEntityMutation.mutate(mediaEntityId);
   };
 
-  //TODO: [cam]  consider updating dateWatched to the date of the last season
-  //watched
   const handleUpdateMediaEntity = (mediaEntity: MediaEntity) => {
     const params: UpdateMediaEntityParams = {
       dateWatched: dateWatched
@@ -104,6 +104,126 @@ const WatchedList = (): JSX.Element => {
     updateMediaEntityMutation.mutate({mediaEntityId, params});
   };
 
+  const getFilteredItems = (): MediaEntity[] => {
+    if (!fetchWatchedMediaQuery.data) {
+      return [];
+    }
+
+    return getFilteredMediaEntities(fetchWatchedMediaQuery.data, searchParams);
+  };
+
+  const handleOpenEditModal = (itemId: string) => {
+    setDateWatched('');
+    setUserRating('');
+    setEditModalId(itemId);
+  };
+
+  const handleSelectDateWatched = (dateWatched: string) => {
+    setDateWatched(dateWatched);
+  };
+
+  const handleSelectDateWatchedSeason = (
+    dateWatched: string | null,
+    seasonNumber: number
+  ) => {
+    if (dateWatched === null) {
+      setDateWatchedSeasons(dateWatchedSeasons.slice(0, -1));
+    } else {
+      setDateWatchedSeasons((prevDateWatchedSeasons) => {
+        prevDateWatchedSeasons[seasonNumber] = dateWatched;
+        return [...prevDateWatchedSeasons];
+      });
+    }
+  };
+
+  const handleChangeRating = (userRating: string) => {
+    setUserRating(userRating);
+  };
+
+  const renderTags = (itemTags: Tags[]) => {
+    return (
+      <Box gap={10}>
+        {itemTags.map((itemTag) => {
+          return <Tag key={itemTag}>{itemTag}</Tag>;
+        })}
+      </Box>
+    );
+  };
+
+  const renderEditModal = (item: MediaEntity) => {
+    return (
+      <Modal title={item.title} onClose={handleCloseEditModal}>
+        <Box flexDirection="column" gap={20}>
+          <WatchedFields
+            isSeries={item.mediaType === MediaType.SERIES}
+            dateWatchedSeasons={
+              dateWatchedSeasons.length
+                ? dateWatchedSeasons
+                : item.dateWatchedSeasons
+            }
+            userRating={userRating ? userRating : item.rating.toString()}
+            dateWatched={dateWatched ? dateWatched : item.dateWatched}
+            dateChangeHandler={handleSelectDateWatched}
+            seasonDateChangeHandler={handleSelectDateWatchedSeason}
+            ratingChangeHandler={handleChangeRating}
+          />
+          {renderTags(item.tags)}
+          <Box justifyContent="space-between">
+            <Box gap={5}>
+              <TagsButton
+                onSubmit={(updatedTags) =>
+                  handleUpdateTags(updatedTags, item.id)
+                }
+                itemTags={item.tags}
+              />
+              <IconButton
+                onClick={() => setIsDeleteItemModalOpen(true)}
+                tooltip={{
+                  text: 'Remove from Watched list',
+                  position: TooltipPosition.LEFT,
+                }}>
+                <TrashIcon className="button-icon" />
+              </IconButton>
+            </Box>
+            <Button
+              onClick={() => handleUpdateMediaEntity(item)}
+              color={Colors.ACTION}
+              disabled={
+                !userRating &&
+                !dateWatched &&
+                !dateWatchedSeasons.length &&
+                item.mediaType === MediaType.SERIES
+              }>
+              <ArrowPathIcon className="button-icon" />
+              Update
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+    );
+  };
+
+  const renderDeleteModal = () => {
+    return (
+      <Modal
+        title="Are you sure?"
+        onClose={() => setIsDeleteItemModalOpen(false)}>
+        <Box justifyContent="end">
+          <Button
+            onClick={() => {
+              handleDeleteMediaEntity(editModalId);
+              setIsDeleteItemModalOpen(false);
+            }}
+            color={Colors.DANGER}>
+            Remove
+          </Button>
+        </Box>
+      </Modal>
+    );
+  };
+
+  const filteredItems = getFilteredItems();
+
   const renderWatchedList = () => {
     if (fetchWatchedMediaQuery.isInitialLoading) {
       return <h1>loading...</h1>;
@@ -117,135 +237,11 @@ const WatchedList = (): JSX.Element => {
       fetchWatchedMediaQuery.isSuccess &&
       !fetchWatchedMediaQuery.data.length
     ) {
-      return <h1>No movies found</h1>;
+      return <EmptyData mediaTypeParam={mediaTypeParam} />;
     }
 
-    const getFilteredItems = (): MediaEntity[] => {
-      if (!fetchWatchedMediaQuery.data) {
-        return [];
-      }
-
-      return getFilteredMediaEntities(
-        fetchWatchedMediaQuery.data,
-        searchParams
-      );
-    };
-
-    const handleOpenEditModal = (itemId: string) => {
-      setDateWatched('');
-      setUserRating('');
-      setEditModalId(itemId);
-    };
-
-    const handleSelectDateWatched = (dateWatched: string) => {
-      setDateWatched(dateWatched);
-    };
-
-    const handleSelectDateWatchedSeason = (
-      dateWatched: string | null,
-      seasonNumber: number
-    ) => {
-      if (dateWatched === null) {
-        setDateWatchedSeasons(dateWatchedSeasons.slice(0, -1));
-      } else {
-        setDateWatchedSeasons((prevDateWatchedSeasons) => {
-          prevDateWatchedSeasons[seasonNumber] = dateWatched;
-          return [...prevDateWatchedSeasons];
-        });
-      }
-    };
-
-    const handleChangeRating = (userRating: string) => {
-      setUserRating(userRating);
-    };
-
-    const renderTags = (itemTags: Tags[]) => {
-      return (
-        <Box gap={10}>
-          {itemTags.map((itemTag) => {
-            return <Tag key={itemTag}>{itemTag}</Tag>;
-          })}
-        </Box>
-      );
-    };
-
-    const renderDeleteModal = () => {
-      return (
-        <Modal
-          title="Are you sure?"
-          onClose={() => setIsDeleteItemModalOpen(false)}>
-          <Box justifyContent="end">
-            <Button
-              onClick={() => {
-                handleDeleteMediaEntity(editModalId);
-                setIsDeleteItemModalOpen(false);
-              }}
-              color={Colors.DANGER}>
-              Remove
-            </Button>
-          </Box>
-        </Modal>
-      );
-    };
-
-    //TODO: [cam]  maybe try a map?
-    const renderEditModal = (item: MediaEntity) => {
-      return (
-        <Modal title={item.title} onClose={handleCloseEditModal}>
-          <Box flexDirection="column" gap={20}>
-            <WatchedFields
-              isSeries={item.mediaType === MediaType.SERIES}
-              dateWatchedSeasons={
-                dateWatchedSeasons.length
-                  ? dateWatchedSeasons
-                  : item.dateWatchedSeasons
-              }
-              userRating={userRating ? userRating : item.rating.toString()}
-              dateWatched={dateWatched ? dateWatched : item.dateWatched}
-              dateChangeHandler={handleSelectDateWatched}
-              seasonDateChangeHandler={handleSelectDateWatchedSeason}
-              ratingChangeHandler={handleChangeRating}
-            />
-            {renderTags(item.tags)}
-            <Box gap={10} justifyContent="space-between">
-              <Box>
-                <TagsButton
-                  onSubmit={(updatedTags) =>
-                    handleUpdateTags(updatedTags, item.id)
-                  }
-                  itemTags={item.tags}
-                />
-                <IconButton
-                  onClick={() => setIsDeleteItemModalOpen(true)}
-                  tooltip={{
-                    text: 'Remove from Watched list',
-                    position: TooltipPosition.LEFT,
-                  }}>
-                  <TrashIcon className="button-icon" />
-                </IconButton>
-              </Box>
-              <Button
-                onClick={() => handleUpdateMediaEntity(item)}
-                color={Colors.ACTION}
-                disabled={
-                  !userRating &&
-                  !dateWatched &&
-                  !dateWatchedSeasons.length &&
-                  item.mediaType === MediaType.SERIES
-                }>
-                <ArrowPathIcon className="button-icon" />
-                Update
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
-      );
-    };
-
-    const filteredItems = getFilteredItems();
-
     if (!filteredItems.length) {
-      return <h1>No items found.</h1>;
+      return <EmptyData mediaTypeParam={mediaTypeParam} />;
     }
 
     return filteredItems.map((item: MediaEntity) => {
@@ -258,7 +254,7 @@ const WatchedList = (): JSX.Element => {
           <Box justifyContent="space-between" alignItems="center" width="100%">
             {editModalId === item.id && renderEditModal(item)}
             {isDeleteItemModalOpen && renderDeleteModal()}
-            <Box gap={5} alignItems="center">
+            <Box className="watched-footer-date" gap={5} alignItems="center">
               {item.watched && getFormattedDate(item.dateWatched)}
               {item.mediaType === MediaType.SERIES && (
                 <Badge number={item.dateWatchedSeasons.length} />
@@ -278,6 +274,7 @@ const WatchedList = (): JSX.Element => {
       );
     });
   };
+
   const getNotificationText = () => {
     return {
       ADDED: <span>Successfully Updated</span>,
@@ -287,16 +284,22 @@ const WatchedList = (): JSX.Element => {
   };
 
   return (
-    <div className="media-card-list">
-      {renderWatchedList()}
-      {notification !== Notifications.NONE && (
-        <Notification
-          onClose={() => setNotification(Notifications.NONE)}
-          color={Colors.WATCHED}>
-          {getNotificationText()}
-        </Notification>
-      )}
-    </div>
+    <Box className="media-card-list-container" flexDirection="column">
+      <FilterSummary
+        totalFilteredItems={filteredItems.length}
+        totalItems={fetchWatchedMediaQuery.data?.length || 0}
+      />
+      <div className="media-card-list">
+        {renderWatchedList()}
+        {notification !== Notifications.NONE && (
+          <Notification
+            onClose={() => setNotification(Notifications.NONE)}
+            color={Colors.WATCHED}>
+            {getNotificationText()}
+          </Notification>
+        )}
+      </div>
+    </Box>
   );
 };
 
