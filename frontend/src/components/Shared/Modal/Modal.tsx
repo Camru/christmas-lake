@@ -67,6 +67,7 @@ const Modal = ({
         <div className="modal-body">{children}</div>
       </div>
     </div>,
+    // @ts-ignore
     document.getElementById('modal')
   );
 };

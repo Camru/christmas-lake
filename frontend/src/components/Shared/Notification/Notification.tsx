@@ -38,6 +38,7 @@ const Notification = ({
     <Box className="notification" style={{backgroundColor: color}}>
       {children}
     </Box>,
+    //@ts-ignore
     document.getElementById('notification')
   );
 };
