@@ -175,7 +175,7 @@ const AddWatchedButton = ({
   const renderModal = () => {
     return (
       <Modal title="Add to Watched list" onClose={() => setIsModalOpen(false)}>
-        <Box flexDirection="column" alignItems="end" gap={10}>
+        <Box flexDirection="column" alignItems="end" gap={40}>
           <WatchedFields
             userRating={userRating}
             dateWatched={dateWatched}

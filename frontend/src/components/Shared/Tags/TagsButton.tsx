@@ -49,8 +49,8 @@ const TagsButton = ({onSubmit, itemTags}: TagsButtonProps): JSX.Element => {
   const renderModal = () => {
     return (
       <Modal title="Add tags" onClose={() => setIsModalOpen(false)}>
-        <Box flexDirection="column" gap={20}>
-          <Box width="300px">
+        <Box flexDirection="column" gap={30}>
+          <Box width="300px" mt={10}>
             <MultiSelect
               value={selectedTags as Option[]}
               options={TAG_OPTIONS}
@@ -77,7 +77,7 @@ const TagsButton = ({onSubmit, itemTags}: TagsButtonProps): JSX.Element => {
       <IconButton
         tooltip={{
           text: 'Add tags',
-          position: TooltipPosition.RIGHT,
+          position: TooltipPosition.LEFT,
         }}
         onClick={() => setIsModalOpen(true)}>
         <TagIcon className="button-icon" />

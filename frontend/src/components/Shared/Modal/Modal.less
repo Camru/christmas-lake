@@ -21,7 +21,7 @@
   padding: var(--padding-md);
   border-radius: 8px;
   min-width: 350px;
-  max-width: 90%;
+  max-width: 500px;
   max-height: 90%;
   overflow: auto;
 
@@ -49,5 +49,11 @@
     position: absolute;
     top: 10px;
     right: 10px;
+  }
+}
+
+@media (max-width: 375px) {
+  .modal {
+    max-width: 90%;
   }
 }

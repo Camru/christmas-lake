@@ -1,13 +1,12 @@
 import {
   ArrowDownCircleIcon,
-  ArrowsPointingInIcon,
   ArrowUpCircleIcon,
   FunnelIcon,
 } from '@heroicons/react/24/outline';
-import {MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
-import {useEffect, useState} from 'react';
-import {useLocation, useSearchParams} from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import {
   Colors,
   MediaType,
@@ -18,7 +17,7 @@ import {
 } from '../../types/types';
 import Box from '../Shared/Box/Box';
 import IconButton from '../Shared/Button/IconButton';
-import Dropdown, {Option} from '../Shared/Dropdown/Dropdown';
+import Dropdown, { Option } from '../Shared/Dropdown/Dropdown';
 import Tabs from '../Shared/Tabs/Tabs';
 
 import './ActionBar.less';

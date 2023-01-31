@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
-import {useSearchParams} from 'react-router-dom';
+import {json, useSearchParams} from 'react-router-dom';
 import greenlightApi, {UpdateMediaEntityParams} from '../../api/greenlightApi';
 import {getFilteredMediaEntities, getFormattedDate} from '../../helpers/utils';
 import {
@@ -150,6 +150,20 @@ const WatchedList = (): JSX.Element => {
     );
   };
 
+  const isItemEdited = (item: MediaEntity) => {
+    if (userRating || dateWatched) {
+      return true;
+    }
+
+    if (item.mediaType === MediaType.SERIES) {
+      return (
+        JSON.stringify(dateWatchedSeasons) !==
+        JSON.stringify(item.dateWatchedSeasons)
+      );
+    }
+  };
+
+
   const renderEditModal = (item: MediaEntity) => {
     return (
       <Modal title={item.title} onClose={handleCloseEditModal}>
@@ -188,12 +202,7 @@ const WatchedList = (): JSX.Element => {
             <Button
               onClick={() => handleUpdateMediaEntity(item)}
               color={Colors.ACTION}
-              disabled={
-                !userRating &&
-                !dateWatched &&
-                !dateWatchedSeasons.length &&
-                item.mediaType === MediaType.SERIES
-              }>
+              disabled={!isItemEdited(item)}>
               <ArrowPathIcon className="button-icon" />
               Update
             </Button>
