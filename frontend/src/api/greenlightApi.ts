@@ -1,7 +1,9 @@
 import axios from 'axios';
 import {MediaType, MediaEntity, Tags} from '../types/types';
 
-const baseURL = 'http://christmas-lake.ddns.net/v1/';
+const instance = axios.create({
+  baseURL: '/v1/',
+});
 
 export type Rating = {
   Source: string;
@@ -36,14 +38,14 @@ type FetchMediaParams = {
 
 const greenlightApi = {
   fetchAllMedia: async (): Promise<MediaEntity[]> => {
-    const {data} = await axios.get('movies');
+    const {data} = await instance.get('movies');
 
     return data.media;
   },
   fetchWatchedMedia: async (
     params?: FetchMediaParams
   ): Promise<MediaEntity[]> => {
-    const {data} = await axios.get(baseURL + 'movies', {
+    const {data} = await instance.get('movies', {
       params: {
         watched: true,
         ...params,
@@ -55,7 +57,7 @@ const greenlightApi = {
   fetchToWatchMedia: async (
     params?: FetchMediaParams
   ): Promise<MediaEntity[]> => {
-    const {data} = await axios.get(baseURL + 'movies', {
+    const {data} = await instance.get('movies', {
       params: {
         watched: false,
         ...params,
@@ -68,7 +70,7 @@ const greenlightApi = {
   createWatchedMedia: async (
     params: CreateWatchedMediaParams
   ): Promise<MediaEntity> => {
-    const {data} = await axios.post(baseURL + 'movies', params);
+    const {data} = await instance.post('movies', params);
     return data.media;
   },
 
@@ -79,12 +81,12 @@ const greenlightApi = {
     mediaEntityId: string;
     params: UpdateMediaEntityParams;
   }): Promise<MediaEntity> => {
-    const {data} = await axios.put(`${baseURL}movies/${mediaEntityId}`, params);
+    const {data} = await instance.put(`movies/${mediaEntityId}`, params);
     return data.media;
   },
 
   deleteMovie: async (movieId: string): Promise<string> => {
-    const {data} = await axios.delete(`${baseURL}movies/${movieId}`);
+    const {data} = await instance.delete(`movies/${movieId}`);
     return data.message;
   },
 };
