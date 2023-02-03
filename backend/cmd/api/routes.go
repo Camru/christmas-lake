@@ -2,17 +2,39 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"path"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
 
+var STATIC_DIR = "../frontend/dist"
+
+var fs = http.FileServer(http.Dir(STATIC_DIR))
+
+func redirectToIndex(w http.ResponseWriter, r *http.Request) {
+	// If the path is not an api path, and it's not the root path "/", check
+	// if there is a file that matches in the static directory. If there isn't
+	// return the root path that resolves back to index.html
+	if r.URL.Path != "/" {
+		fullPath := STATIC_DIR + strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+		_, err := os.Stat(fullPath)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				panic(err)
+			}
+			// Requested file does not exist so we return the default (resolves to index.html)
+			r.URL.Path = "/"
+		}
+	}
+
+	fs.ServeHTTP(w, r)
+
+}
+
 func (app *application) routes() http.Handler {
 	router := httprouter.New()
-
-	// Convert the notFoundResponse() helper to a http.Handler using the
-	// http.HandlerFunc() adapter, and then set it as the custom error handler
-	// for 404 Not Found responses.
-	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 
 	// Likewise, convert the methodNotAllowedResponse() helper to a
 	// http.Handler and set
@@ -30,5 +52,13 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.updateMovieHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
 
-	return app.enableCORS(router)
+	// These map to the frontend routes handled by react-router
+	router.HandlerFunc(http.MethodGet, "/to-watch", redirectToIndex)
+	router.HandlerFunc(http.MethodGet, "/watched", redirectToIndex)
+	router.HandlerFunc(http.MethodGet, "/search", redirectToIndex)
+
+	router.NotFound = fs
+
+	return router
+	// return app.enableCORS(router)
 }
