@@ -2,7 +2,7 @@ import axios from 'axios';
 import {MediaType, MediaEntity, Tags} from '../types/types';
 
 const instance = axios.create({
-  baseURL: 'v1/',
+  baseURL: 'http://christmas-lake.ddns.net/v1/',
 });
 
 export type Rating = {
