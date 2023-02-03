@@ -2,7 +2,7 @@ import axios from 'axios';
 import {MediaType, MediaEntity, Tags} from '../types/types';
 
 const instance = axios.create({
-  baseURL: '/v1/',
+  baseURL: 'http://localhost:4000/v1/',
 });
 
 export type Rating = {
