@@ -59,5 +59,6 @@ func (app *application) routes() http.Handler {
 
 	router.NotFound = fs
 
+	// return router
 	return app.enableCORS(router)
 }
