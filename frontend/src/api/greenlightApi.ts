@@ -2,7 +2,7 @@ import axios from 'axios';
 import {MediaType, MediaEntity, Tags} from '../types/types';
 
 const instance = axios.create({
-  baseURL: 'http://192.168.0.110:4000/v1/',
+  baseURL: import.meta.env.VITE_GREENLIGHT_API_URL,
 });
 
 export type Rating = {
