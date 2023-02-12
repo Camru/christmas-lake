@@ -1,9 +1,11 @@
 # TODO:
 
+- Hide API Keys
+- Make sure app/network is secure
+
 - Fetch “Where to Stream” for To Watch media
 - Table View
 - Authentication
-- DB Backups
 
 # How to run in DEV mode 
 
@@ -19,8 +21,9 @@ cd backend/ && ./run.sh
 
 # Raspberry Pi
 
-On boot, the pi runs nginx (which serves the index.html and static js/css assets
-and will run the systemd service located at /etc/systemd/system/my_app.service
+On boot, the pi runs caddy (which serves the index.html and static js/css
+assets) and reverse proxies the pi IP to the backend server and will run the
+systemd service located at /etc/systemd/system/my_app.service
 
 This service calls the go run command and passes the flag for the db dsn
 

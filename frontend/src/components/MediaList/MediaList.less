@@ -10,12 +10,12 @@
 	grid-template-columns: repeat(auto-fill, var(--media-card-width));
 }
 
-@media (max-width: 375px) {
+@media (max-width: 770px) {
 	.media-card-list {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-start;
 		gap: 10px;
-		padding-bottom: 80px;
+		padding-bottom: env(safe-area-inset-bottom);
 	}
 }

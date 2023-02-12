@@ -3,7 +3,7 @@ import {SearchResult, SearchResultByIdOrTitle} from '../types/types';
 const API_KEY = '31cc9767';
 
 const instance = axios.create({
-  baseURL: `http://www.omdbapi.com/`,
+  baseURL: `https://www.omdbapi.com/`,
 });
 
 const omdbApi = {

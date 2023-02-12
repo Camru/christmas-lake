@@ -182,7 +182,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
 
   const renderRatings = () => {
     const ratings = JSON.parse(item.ratings) || [];
-    const visibleRatings = viewportWidth <= 375 ? ratings.slice(0, 2) : ratings;
+    const visibleRatings = viewportWidth <= 415 ? ratings.slice(0, 2) : ratings;
 
     return (
       <Box className="ratings-list">
