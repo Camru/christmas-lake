@@ -163,7 +163,6 @@ const WatchedList = (): JSX.Element => {
     }
   };
 
-
   const renderEditModal = (item: MediaEntity) => {
     return (
       <Modal title={item.title} onClose={handleCloseEditModal}>
@@ -258,8 +257,10 @@ const WatchedList = (): JSX.Element => {
         <MediaCard
           key={item.id}
           id={item.id}
+          imdbId={item.imdbID}
           title={item.title}
-          thumbnail={item.thumbnail}>
+          thumbnail={item.thumbnail}
+          mediaType={item.mediaType}>
           <Box justifyContent="space-between" alignItems="center" width="100%">
             {editModalId === item.id && renderEditModal(item)}
             {isDeleteItemModalOpen && renderDeleteModal()}

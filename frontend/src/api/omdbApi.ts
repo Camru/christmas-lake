@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {SearchResult, SearchResultByIdOrTitle} from '../types/types';
-const API_KEY = '31cc9767';
+const API_KEY = import.meta.env.VITE_OMDB_API_KEY;
 
 const instance = axios.create({
   baseURL: `https://www.omdbapi.com/`,

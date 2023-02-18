@@ -48,6 +48,25 @@ export type SearchResultByIdOrTitle = {
   Type: string;
   totalSeasons: string;
 };
+
+export type FindSeriesById = {
+  adult: boolean;
+  backdrop_path: string;
+  id: number;
+  name: string;
+  original_language: string;
+  original_name: string;
+  overview: string;
+  poster_path: string;
+  media_type: string;
+  genre_ids: number[];
+  popularity: number;
+  first_air_date: string;
+  vote_average: number;
+  vote_count: number;
+  origin_country: string[];
+};
+
 export type MediaRating = {
   Source: string;
   Value: string; //"8.7/10"
@@ -80,6 +99,7 @@ export enum REACT_QUERY_API_KEYS {
   OMDB_SEARCH = 'omdb_search',
   OMDB_SEARCH_BY_ID = 'omdb_search_by_id',
   OMDB_SEARCH_BY_TITLE = 'omdb_search_by_title',
+  MOVIE_DB_FIND_BY_ID = 'movie_db_find_by_id',
 }
 
 export enum URL_PATHS {

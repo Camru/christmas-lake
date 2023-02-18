@@ -137,8 +137,10 @@ const ToWatchList = (): JSX.Element => {
         <MediaCard
           key={item.id}
           id={item.id}
+          imdbId={item.imdbID}
           title={item.title}
-          thumbnail={item.thumbnail}>
+          thumbnail={item.thumbnail}
+          mediaType={item.mediaType}>
           <ToWatchFooter item={item} />
         </MediaCard>
       );

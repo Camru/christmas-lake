@@ -24,12 +24,11 @@
 	}
 
 	.media-card-img {
-		flex: 1;
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center;
 		border-radius: calc(var(--media-card-border-radius) - 1px);
-		min-height: 275px;
+		height: 300px;
 	}
 
 	.media-card-footer {
@@ -51,6 +50,10 @@
 @media (max-width: 1115px) {
 	.media-card {
 		width: 172px;
+	}
+
+	.media-card-img {
+		height: 270px;
 	}
 
 	.media-card-header {

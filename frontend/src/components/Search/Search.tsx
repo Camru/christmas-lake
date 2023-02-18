@@ -88,8 +88,10 @@ const Search = () => {
       <MediaCard
         key={item.imdbID}
         id={item.imdbID}
+        imdbId={item.imdbID}
         title={item.Title}
-        thumbnail={item.Poster}>
+        thumbnail={item.Poster}
+        mediaType={item.Type}>
         <SearchItemFooter
           item={item}
           watchedMediaEntityId={getWatchedMediaEntityId(item.imdbID)}
