@@ -1,8 +1,5 @@
 # TODO:
 
-- Hide API Keys
-- Make sure app/network is secure
-
 - Fetch “Where to Stream” for To Watch media
 - Table View
 - Authentication
