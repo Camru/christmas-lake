@@ -18,6 +18,7 @@ const MediaCard = ({
   title,
   children,
 }: WatchedItemProps): JSX.Element => {
+
   return (
     <Box key={id} className="media-card" flexDirection="column">
       <img className="media-card-img" src={thumbnail} />
