@@ -4,8 +4,8 @@
 	border-radius: var(--media-card-border-radius);
 	color: white;
 
-	&.halloween::after {
-		box-shadow: inset 0px 0px 25px 4px #ff8d00;
+	&.halloween::after,
+	&.christmas::after {
 		content: '';
 		display: block;
 		height: 100%;
@@ -13,17 +13,15 @@
 		top: 0;
 		width: 100%;
 		border-radius: 10px;
+		pointer-events: none;
+	}
+
+	&.halloween::after {
+		box-shadow: inset 0px 0px 25px 4px #ff8d00;
 	}
 
 	&.christmas::after {
-		box-shadow: inset 0px 0px 22px 7px #ffffff;
-		content: '';
-		display: block;
-		height: 100%;
-		position: absolute;
-		top: 0;
-		width: 100%;
-		border-radius: 10px;
+		box-shadow: inset 0px 0px 22px 7px #00863d;
 	}
 
 	.media-card-header {
