@@ -212,30 +212,27 @@ func (m MovieModel) Delete(id int64) error {
 // using them right now, we've set this up to accept the various filter parameters as
 // arguments.
 func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([]*Movie, error) {
-	// Determine the appropriate sorting column, converting `dateWatched` to a date if it's the column to sort by.
-	sortColumn := filters.sortColumn()
-	if sortColumn == "dateWatched" {
-		sortColumn = "TO_DATE(dateWatched, 'Dy Mon DD YYYY')"
-	}
-
 	// Construct the SQL query to retrieve all movie records.
 	query := fmt.Sprintf(`
 	SELECT id, title, dateWatched, year, mediaType, thumbnail, imdbID, rating, ratings, watched, version, dateWatchedSeasons, tags
 	FROM media
 	WHERE (watched = true AND $1 = 'true' OR watched = false AND $1 = 'false' OR $1 = '')
 	AND (mediaType = $2 OR $2 = '')
-	ORDER BY %s %s, id ASC`, sortColumn, filters.sortDirection())
+	ORDER BY %s %s, id ASC`, filters.sortColumn(), filters.sortDirection())
 
 	// Create a context with a 3-second timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	// Execute the query
+	// Use QueryContext() to execute the query. This returns a sql.Rows resultset
+	// containing the result.
 	rows, err := m.DB.QueryContext(ctx, query, watched, mediaType)
 	if err != nil {
 		return nil, err
 	}
 
+	// Importantly, defer a call to rows.Close() to ensure that the resultset is closed
+	// before GetAll() returns.
 	defer rows.Close()
 
 	// Initialize an empty slice to hold the movie data.
@@ -246,7 +243,8 @@ func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([
 		// Initialize an empty Movie struct to hold the data for an individual movie.
 		var movie Movie
 
-		// Scan the values from the row into the Movie struct.
+		// Scan the values from the row into the Movie struct. Again, note that we're
+		// using the pq.Array() adapter on the genres field here.
 		err := rows.Scan(
 			&movie.ID,
 			&movie.Title,
@@ -270,10 +268,12 @@ func (m MovieModel) GetAll(watched string, mediaType string, filters Filters) ([
 		movies = append(movies, &movie)
 	}
 
-	// Check for errors from iterating over rows.
+	// When the rows.Next() loop has finished, call rows.Err() to retrieve any error
+	// that was encountered during the iteration.
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
+	// If everything went OK, then return the slice of movies.
 	return movies, nil
 }
