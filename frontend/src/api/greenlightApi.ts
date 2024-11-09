@@ -70,7 +70,9 @@ const greenlightApi = {
   createWatchedMedia: async (
     params: CreateWatchedMediaParams
   ): Promise<MediaEntity> => {
+    console.log('[cam] params', params);
     const {data} = await instance.post('movies', params);
+    console.log('[cam] data.media', data.media);
     return data.media;
   },
 

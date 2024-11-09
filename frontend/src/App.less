@@ -6,7 +6,11 @@
 }
 
 .contents {
-  padding: 0 var(--padding-md);
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  height: 100%;
+  justify-content: space-between;
   overflow: auto;
 }
 
@@ -17,7 +21,6 @@
 
 @media (max-width: 1115px) {
   .contents {
-    padding: var(--mobile-padding);
     padding-top: 0;
-  } 
+  }
 }

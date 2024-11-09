@@ -108,7 +108,7 @@ const Search = () => {
   };
 
   return (
-    <Box flexDirection="column">
+    <Box className="search-container" flexDirection="column">
       <Box p="20px 0 25px 0">
         <h1 style={{fontSize: 24, margin: 0, marginRight: 'auto'}}>Search</h1>
         <Box className="search-input" alignItems="center" position="relative">

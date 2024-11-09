@@ -6,12 +6,12 @@ import './Modal.less';
 import {Colors} from '../../../types/types';
 import classNames from 'classnames';
 import Box from '../Box/Box';
-import { XMarkIcon } from '@heroicons/react/24/solid';
+import {XMarkIcon} from '@heroicons/react/24/solid';
 
 type ModalProps = {
   children: React.ReactNode;
   onClose: () => void;
-  title: string;
+  title: string | React.ReactElement;
   subtitle?: React.ReactElement;
   className?: string;
 };

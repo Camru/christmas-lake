@@ -33,7 +33,7 @@ const convertToMediaEntity = (
 ): CreateWatchedMediaParams => {
   return {
     title: item.Title,
-    dateWatched: new Date().toDateString(),
+    dateWatched: new Date().toISOString(),
     dateWatchedSeasons: [],
     tags: [],
     year: item.Year,

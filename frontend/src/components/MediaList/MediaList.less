@@ -1,6 +1,7 @@
 .media-card-list-container {
 	background-color: var(--color-body-bg);
 	position: relative;
+	padding: 0 var(--padding-md);
 }
 
 .media-card-list {
@@ -11,11 +12,14 @@
 }
 
 @media (max-width: 1115px) {
+	.media-card-list-container {
+		padding: var(--mobile-padding);
+	}
+
 	.media-card-list {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-start;
 		gap: 10px;
-		padding-bottom: env(safe-area-inset-bottom);
 	}
 }

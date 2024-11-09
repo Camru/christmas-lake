@@ -4,6 +4,28 @@
 	border-radius: var(--media-card-border-radius);
 	color: white;
 
+	&.halloween::after {
+		box-shadow: inset 0px 0px 25px 4px #ff8d00;
+		content: '';
+		display: block;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		border-radius: 10px;
+	}
+
+	&.christmas::after {
+		box-shadow: inset 0px 0px 22px 7px #ffffff;
+		content: '';
+		display: block;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		border-radius: 10px;
+	}
+
 	.media-card-header {
 		display: flex;
 		align-items: center;
@@ -45,6 +67,16 @@
 
 .watched-footer-date {
 	font-size: 12px;
+}
+
+.upcoming-release {
+	background-color: var(--color-watched);
+	padding: 5px 10px;
+	position: absolute;
+	top: -23px;
+	width: 100%;
+	font-weight: bold;
+	font-size: 11px;
 }
 
 @media (max-width: 1115px) {

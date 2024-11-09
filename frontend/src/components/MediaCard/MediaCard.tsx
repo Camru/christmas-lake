@@ -1,4 +1,4 @@
-import {MediaEntity, MediaType, REACT_QUERY_API_KEYS} from '../../types/types';
+import {MediaType, REACT_QUERY_API_KEYS, Tags} from '../../types/types';
 
 import Box from '../Shared/Box/Box';
 
@@ -6,6 +6,7 @@ import './MediaCard.less';
 import React from 'react';
 import {useQuery} from '@tanstack/react-query';
 import moviedbApi from '../../api/moviedbApi';
+import classNames from 'classnames';
 
 type WatchedItemProps = {
   children?: React.ReactElement;
@@ -13,6 +14,7 @@ type WatchedItemProps = {
   imdbId: string;
   mediaType: MediaType;
   thumbnail: string;
+  tags?: string[];
   title: string;
 };
 
@@ -22,6 +24,7 @@ const MediaCard = ({
   mediaType,
   thumbnail,
   title,
+  tags,
   children,
 }: WatchedItemProps): JSX.Element => {
   const fetchItemByType = useQuery({
@@ -47,7 +50,13 @@ const MediaCard = ({
   };
 
   return (
-    <Box key={id} className="media-card" flexDirection="column">
+    <Box
+      key={id}
+      className={classNames('media-card', {
+        halloween: tags?.includes(Tags.HALLOWEEN),
+        christmas: tags?.includes(Tags.CHRISTMAS),
+      })}
+      flexDirection="column">
       {fetchItemByType.isLoading ? (
         <Box className="media-card-img" />
       ) : (

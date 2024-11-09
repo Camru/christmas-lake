@@ -41,6 +41,7 @@ export type SearchResultByIdOrTitle = {
   Country: string;
   Poster: string;
   Ratings: MediaRating[];
+  Released: string;
   Metascore: string;
   imdbRating: string;
   imdbVotes: string;

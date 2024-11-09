@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
-import {json, useSearchParams} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import greenlightApi, {UpdateMediaEntityParams} from '../../api/greenlightApi';
 import {getFilteredMediaEntities, getFormattedDate} from '../../helpers/utils';
 import {
@@ -260,7 +260,8 @@ const WatchedList = (): JSX.Element => {
           imdbId={item.imdbID}
           title={item.title}
           thumbnail={item.thumbnail}
-          mediaType={item.mediaType}>
+          mediaType={item.mediaType}
+          tags={item.tags}>
           <Box justifyContent="space-between" alignItems="center" width="100%">
             {editModalId === item.id && renderEditModal(item)}
             {isDeleteItemModalOpen && renderDeleteModal()}

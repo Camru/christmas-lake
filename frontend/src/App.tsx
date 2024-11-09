@@ -5,6 +5,7 @@ import ActionBar from './components/ActionBar/ActionBar';
 import Box from './components/Shared/Box/Box';
 import {useEffect} from 'react';
 import {URL_PATHS} from './types/types';
+import Footer from './components/Footer/Footer';
 
 function App() {
   const {pathname} = useLocation();
@@ -27,6 +28,7 @@ function App() {
       <ActionBar />
       <div className="contents">
         <Outlet />
+        <Footer />
       </div>
     </div>
   );

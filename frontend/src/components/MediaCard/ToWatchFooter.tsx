@@ -11,6 +11,7 @@ import {
   Colors,
   MediaEntity,
   MediaRating,
+  MediaType,
   Notifications,
   RatingSource,
   REACT_QUERY_API_KEYS,
@@ -98,6 +99,33 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     }[notification];
   };
 
+  const getReelGoodURL = () => {
+    const mediaTypePath = item.mediaType === MediaType.MOVIE ? 'movie' : 'show';
+    const title = `${item.title
+      .replace(/[^\w\s]/gi, '')
+      .toLocaleLowerCase()
+      .replaceAll(' ', '-')}-${item.year}`;
+    return `https://reelgood.com/${mediaTypePath}/${title}`;
+  };
+
+  const getGoogleSearchURL = () => {
+    const q = [item.title, item.year, 'rotten tomatoes'].join('+');
+
+    return `https://www.google.com/search?q=${q}`;
+  };
+
+  const getHumanReadableDate = (isoDateString: string) => {
+    const date = new Date(isoDateString);
+
+    // Format to "November 8, 2024"
+    const humanReadableDate = date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    return humanReadableDate;
+  };
   const renderExtraDetails = () => {
     if (isFetching) {
       return <p>loading extra details...</p>;
@@ -106,7 +134,7 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     const details = [
       {
         label: 'Date Added',
-        value: getFormattedDate(item.dateWatched),
+        value: getHumanReadableDate(item.dateWatched),
       },
       {
         label: 'Year',
@@ -185,9 +213,15 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     const visibleRatings = viewportWidth <= 415 ? ratings.slice(0, 2) : ratings;
 
     return (
-      <Box className="ratings-list">
-        {ratings.length ? visibleRatings.map(renderRating) : <p>No Ratings</p>}
-      </Box>
+      <a href={getGoogleSearchURL()} target="_blank" rel="noopener noreferrer">
+        <Box className="ratings-list">
+          {ratings.length ? (
+            visibleRatings.map(renderRating)
+          ) : (
+            <p>No Ratings</p>
+          )}
+        </Box>
+      </a>
     );
   };
 
@@ -214,7 +248,11 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     return (
       <Modal
         className="dark"
-        title={item.title}
+        title={
+          <a href={getReelGoodURL()} target="_blank" rel="noopener noreferrer">
+            {item.title}
+          </a>
+        }
         subtitle={renderRatings()}
         onClose={() => setIsExtraDetailsModalOpen(false)}>
         <Box flexDirection="column" gap={10}>
@@ -233,8 +271,37 @@ const ToWatchFooter = ({item}: ToWatchFooter): JSX.Element => {
     tags: item.tags,
   };
 
+  const getIsUpcomingRelease = (): boolean => {
+    if (!data?.Released) return false;
+
+    const releaseDateTimestamp = new Date(data.Released).getTime();
+
+    if (Date.now() <= releaseDateTimestamp) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const renderUpcomingRelease = () => {
+    const isUpcomingRelease = getIsUpcomingRelease();
+
+    if (!isUpcomingRelease || !data?.Released) {
+      return null;
+    }
+
+    const dateString = new Date(data.Released).toDateString();
+
+    return (
+      <Box className="upcoming-release" mr="auto">
+        Coming {getFormattedDate(dateString)}
+      </Box>
+    );
+  };
+
   return (
     <Box width="100%" gap={10} alignItems="center" flexDirection="column">
+      {renderUpcomingRelease()}
       <Box width="100%" mt="10px">
         {renderRatings()}
       </Box>
