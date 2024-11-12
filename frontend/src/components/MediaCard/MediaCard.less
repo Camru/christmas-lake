@@ -4,16 +4,20 @@
 	border-radius: var(--media-card-border-radius);
 	color: white;
 
-	&.halloween::after,
-	&.christmas::after {
-		content: '';
-		display: block;
-		height: 100%;
-		position: absolute;
-		top: 0;
-		width: 100%;
-		border-radius: 10px;
-		pointer-events: none;
+	&.halloween,
+	&.christmas {
+		border: none;
+
+		&::after {
+			content: '';
+			display: block;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			border-radius: 10px;
+			pointer-events: none;
+		}
 	}
 
 	&.halloween::after {
